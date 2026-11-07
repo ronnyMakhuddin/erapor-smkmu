@@ -1,0 +1,1468 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rapor SMK Mambaul Ulum</title>
+<meta name="description" content="Aplikasi e-Rapor SMK Mambaul Ulum">
+<meta name="theme-color" content="#047857">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="logo.png" type="image/png" id="favicon">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{
+  --primary:#047857; --primary-2:#10B981; --primary-soft:#ECFDF5;
+  --accent:#D97706; --accent-soft:#FEF3C7;
+  --bg:#F8FAFC; --surface:rgba(255,255,255,.72); --surface-solid:#FFFFFF;
+  --border:rgba(15,23,42,.08); --border-strong:rgba(15,23,42,.14);
+  --text:#0F172A; --body:#334155; --muted:#64748B;
+  --danger:#DC2626; --danger-soft:#FEE2E2; --info:#2563EB; --info-soft:#DBEAFE;
+  --radius:16px; --radius-sm:10px;
+  --shadow:0 1px 2px rgba(15,23,42,.04), 0 8px 24px rgba(15,23,42,.06);
+  --shadow-lg:0 20px 50px rgba(15,23,42,.14);
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:'Plus Jakarta Sans',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--body);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+.app-root{position:fixed;inset:0;z-index:999999;background:var(--bg);overflow:hidden}
+.app-root::before,.app-root::after{content:"";position:absolute;border-radius:50%;filter:blur(70px);opacity:.55;pointer-events:none}
+.app-root::before{width:480px;height:480px;background:#A7F3D0;top:-160px;right:-120px}
+.app-root::after{width:420px;height:420px;background:#FDE68A;bottom:-180px;left:-140px;opacity:.4}
+.glass{background:var(--surface);backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);border:1px solid rgba(255,255,255,.7);box-shadow:var(--shadow)}
+h1,h2,h3,h4{color:var(--text);margin:0;letter-spacing:-.01em}
+.muted{color:var(--muted)}
+.small{font-size:12px}
+.hidden{display:none!important}
+
+/* ---------- Layout ---------- */
+.layout{position:relative;z-index:1;display:flex;height:100%}
+.sidebar{width:260px;flex-shrink:0;margin:14px 0 14px 14px;border-radius:22px;display:flex;flex-direction:column;padding:18px 14px;overflow-y:auto}
+.brand{display:flex;align-items:center;gap:10px;padding:4px 8px 18px}
+.brand-logo{width:44px;height:44px;object-fit:contain;flex-shrink:0;filter:drop-shadow(0 4px 10px rgba(15,23,42,.15))}
+.brand-title{font-weight:800;color:var(--text);font-size:15px;line-height:1.2}
+.brand-sub{font-size:11px;color:var(--muted)}
+.nav{display:flex;flex-direction:column;gap:2px;flex:1}
+.nav-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:12px 12px 6px}
+.nav-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;border:0;background:none;cursor:pointer;text-align:left;font-weight:600;color:var(--body);transition:background .15s,color .15s}
+.nav-item svg{width:18px;height:18px;flex-shrink:0}
+.nav-item:hover{background:rgba(4,120,87,.07);color:var(--primary)}
+.nav-item.active{background:var(--primary);color:#fff;box-shadow:0 6px 16px rgba(4,120,87,.28)}
+.user-box{margin-top:12px;padding:12px;border-radius:14px;background:rgba(255,255,255,.6);border:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.avatar{width:36px;height:36px;border-radius:50%;background:var(--primary-soft);color:var(--primary);display:grid;place-items:center;font-weight:800;flex-shrink:0}
+.user-box .info{flex:1;min-width:0}
+.user-box .name{font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px}
+.main{flex:1;min-width:0;display:flex;flex-direction:column;height:100%}
+.topbar{display:flex;align-items:center;gap:12px;padding:20px 28px 8px}
+.topbar h1{font-size:22px;font-weight:800}
+.topbar .spacer{flex:1}
+.view{flex:1;overflow-y:auto;padding:12px 28px 40px}
+.bottomnav{display:none}
+.preview-banner{position:relative;z-index:2;background:linear-gradient(90deg,#F59E0B,#D97706);color:#fff;font-weight:700;font-size:12px;text-align:center;padding:6px 12px}
+
+/* ---------- Components ---------- */
+.card{border-radius:var(--radius);padding:20px}
+.card + .card{margin-top:16px}
+.card-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.card-head h3{font-size:16px;font-weight:700}
+.card-head .spacer{flex:1}
+.grid{display:grid;gap:16px}
+.grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.stat{border-radius:var(--radius);padding:18px;display:flex;gap:14px;align-items:center}
+.stat-icon{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;flex-shrink:0}
+.stat-icon svg{width:22px;height:22px}
+.stat-val{font-size:24px;font-weight:800;color:var(--text);line-height:1.1}
+.stat-lbl{font-size:12px;color:var(--muted);font-weight:600}
+.c-green{background:var(--primary-soft);color:var(--primary)}
+.c-amber{background:var(--accent-soft);color:var(--accent)}
+.c-blue{background:var(--info-soft);color:var(--info)}
+.c-red{background:var(--danger-soft);color:var(--danger)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 16px;border-radius:12px;border:1px solid transparent;font-weight:700;cursor:pointer;transition:transform .1s,box-shadow .15s,background .15s;white-space:nowrap;font-size:13px}
+.btn svg{width:16px;height:16px}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+.btn-primary{background:var(--primary);color:#fff;box-shadow:0 6px 16px rgba(4,120,87,.25)}
+.btn-primary:hover{background:#065F46}
+.btn-ghost{background:rgba(255,255,255,.7);border-color:var(--border-strong);color:var(--text)}
+.btn-ghost:hover{background:#fff}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-accent{background:var(--accent);color:#fff}
+.btn-sm{padding:6px 10px;font-size:12px;border-radius:9px}
+.btn-icon{padding:7px;border-radius:9px}
+.btn-block{width:100%}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700}
+.b-green{background:var(--primary-soft);color:var(--primary)}
+.b-amber{background:var(--accent-soft);color:#B45309}
+.b-red{background:var(--danger-soft);color:var(--danger)}
+.b-gray{background:#F1F5F9;color:var(--muted)}
+.b-blue{background:var(--info-soft);color:var(--info)}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field label{font-size:12px;font-weight:700;color:var(--text)}
+.field .hint{font-size:11px;color:var(--muted)}
+.input,select.input,textarea.input{width:100%;padding:10px 12px;border-radius:11px;border:1px solid var(--border-strong);background:rgba(255,255,255,.85);outline:none;transition:border .15s,box-shadow .15s}
+.input:focus{border-color:var(--primary-2);box-shadow:0 0 0 3px rgba(16,185,129,.18)}
+textarea.input{resize:vertical;min-height:60px}
+.input-sm{padding:7px 9px;border-radius:9px;font-size:13px}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.form-grid .full{grid-column:1/-1}
+.check{display:flex;align-items:center;gap:8px;font-weight:600;cursor:pointer}
+.check input{width:18px;height:18px;accent-color:var(--primary)}
+.search{position:relative;flex:1;min-width:180px;max-width:320px}
+.search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--muted)}
+.search input{padding-left:36px}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.table-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,.6)}
+table.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:700;padding:11px 12px;background:rgba(248,250,252,.9);border-bottom:1px solid var(--border);white-space:nowrap}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:0}
+.tbl tbody tr:hover td{background:rgba(236,253,245,.45)}
+.tbl .num{width:44px;color:var(--muted)}
+.tbl .act{white-space:nowrap;text-align:right}
+.tbl td .input-sm{min-width:70px}
+.empty{text-align:center;padding:42px 16px;color:var(--muted)}
+.empty svg{width:42px;height:42px;color:#CBD5E1;margin-bottom:8px}
+.empty h4{color:var(--text);font-size:15px;margin-bottom:4px}
+.skeleton{height:14px;border-radius:7px;background:linear-gradient(90deg,#EEF2F7 25%,#F8FAFC 50%,#EEF2F7 75%);background-size:200% 100%;animation:sk 1.2s infinite}
+@keyframes sk{to{background-position:-200% 0}}
+.progress{height:10px;border-radius:99px;background:#E2E8F0;overflow:hidden}
+.progress > span{display:block;height:100%;background:linear-gradient(90deg,var(--primary),var(--primary-2));border-radius:99px;transition:width .6s}
+.list-item{display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,.65);cursor:pointer;transition:border .15s,transform .15s}
+.list-item:hover{border-color:var(--primary-2);transform:translateY(-1px)}
+.list-item + .list-item{margin-top:8px}
+.list-item .grow{flex:1;min-width:0}
+.list-item .t{font-weight:700;color:var(--text)}
+.hero{border-radius:20px;padding:22px 24px;background:linear-gradient(135deg,#047857,#10B981);color:#fff;display:flex;align-items:center;gap:16px;margin-bottom:16px;box-shadow:0 14px 34px rgba(4,120,87,.25)}
+.hero h2{color:#fff;font-size:20px}
+.hero p{margin:4px 0 0;opacity:.9}
+.hero .spacer{flex:1}
+.hero-badge{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);padding:8px 14px;border-radius:12px;font-weight:700;font-size:12px;text-align:center}
+
+/* ---------- Login ---------- */
+.login-wrap{position:relative;z-index:1;height:100%;overflow-y:auto;display:grid;place-items:center;padding:24px 16px}
+.login-card{width:100%;max-width:420px;border-radius:24px;padding:30px 28px}
+.login-head{text-align:center;margin-bottom:22px}
+.login-head .brand-logo{width:96px;height:96px;margin:0 auto 14px;display:block}
+.login-head h1{font-size:22px;font-weight:800}
+.tabs{display:flex;background:rgba(241,245,249,.9);border-radius:12px;padding:4px;margin-bottom:18px}
+.tabs button{flex:1;border:0;background:none;padding:9px;border-radius:9px;font-weight:700;cursor:pointer;color:var(--muted)}
+.tabs button.active{background:#fff;color:var(--primary);box-shadow:0 2px 6px rgba(15,23,42,.08)}
+.stack{display:flex;flex-direction:column;gap:14px}
+.quick{margin-top:18px;padding-top:16px;border-top:1px dashed var(--border-strong)}
+.quick-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+
+/* ---------- Modal & toast ---------- */
+.modal-wrap{position:fixed;inset:0;z-index:1000001;background:rgba(15,23,42,.35);backdrop-filter:blur(4px);display:grid;place-items:center;padding:16px;animation:fade .15s}
+.modal{width:100%;max-width:560px;max-height:calc(100vh - 32px);display:flex;flex-direction:column;border-radius:20px;background:rgba(255,255,255,.94);box-shadow:var(--shadow-lg);animation:pop .18s}
+.modal.wide{max-width:900px}
+.modal-head{display:flex;align-items:center;gap:10px;padding:18px 20px;border-bottom:1px solid var(--border)}
+.modal-head h3{flex:1;font-size:17px}
+.modal-body{padding:20px;overflow-y:auto}
+.modal-foot{display:flex;justify-content:flex-end;gap:10px;padding:14px 20px;border-top:1px solid var(--border)}
+@keyframes fade{from{opacity:0}}
+@keyframes pop{from{opacity:0;transform:translateY(8px) scale(.98)}}
+#toast{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:1000002;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.toast{padding:11px 16px;border-radius:12px;color:#fff;font-weight:600;box-shadow:var(--shadow-lg);animation:pop .2s;max-width:90vw;display:flex;gap:8px;align-items:center}
+.toast.ok{background:#065F46}.toast.err{background:#B91C1C}.toast.info{background:#1E293B}
+.spin{width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:rot .7s linear infinite}
+.spin.dark{border-color:rgba(4,120,87,.2);border-top-color:var(--primary)}
+@keyframes rot{to{transform:rotate(360deg)}}
+.sheet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.sheet-grid button{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 6px;border-radius:14px;border:1px solid var(--border);background:#fff;font-weight:600;font-size:12px;cursor:pointer;text-align:center}
+.sheet-grid button.active{border-color:var(--primary);color:var(--primary);background:var(--primary-soft)}
+.sheet-grid svg{width:20px;height:20px}
+
+/* ---------- Rapor (kertas) ---------- */
+.paper{background:#fff;color:#000;padding:28px 32px;border-radius:6px;box-shadow:0 2px 10px rgba(0,0,0,.08);font-family:Arial,Helvetica,sans-serif;font-size:11.5px;line-height:1.35;max-width:820px;margin:0 auto;position:relative;overflow:hidden;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.paper + .paper{margin-top:20px}
+.paper > *{position:relative;z-index:1}
+.paper > img.wm{position:absolute;z-index:0;left:50%;top:32%;width:52%;transform:translateX(-50%);opacity:.07;pointer-events:none}
+.paper table{width:100%;border-collapse:collapse}
+.paper .nil{margin-top:10px}
+.paper .nil th,.paper .nil td{border:1px solid #000;padding:4px 6px;vertical-align:top}
+.paper .nil th{background:rgba(229,231,235,.85);text-align:center;font-weight:700}
+.paper .nil th.judul{font-size:13px;background:#fff}
+.paper .nil .grp td{font-weight:700;background:rgba(243,244,246,.85)}
+.paper .nil .ctr{text-align:center}
+.paper .nil td.cap{font-size:10.5px;text-align:justify}
+.paper .nil tr{page-break-inside:avoid}
+.paper .blok{margin-top:12px;page-break-inside:avoid}
+.paper .dua{display:grid;grid-template-columns:38% 1fr;gap:14px;align-items:start}
+.paper .dua .nil{margin-top:0}
+.paper .uts-head{border:1.5px solid #000}
+.paper .uts-head td{vertical-align:middle;padding:6px 10px}
+.paper .uts-head .l{width:150px;background:#4B5563;color:#fff;text-align:center;font-size:9px;font-weight:700}
+.paper .uts-head .l img{width:40px;height:40px;object-fit:contain;display:block;margin:0 auto 2px}
+.paper .uts-head .t{font-size:17px;font-weight:800;letter-spacing:.01em}
+.paper .uts-head .s{font-size:11px;font-weight:700}
+.paper .ident2{margin-top:8px}
+.paper .ident2 td,.paper .ident3 td{vertical-align:top;padding:1px 3px;font-size:11px}
+.paper .ident2 > tbody > tr > td{width:50%}
+.paper .ident3 > tbody > tr > td{width:55%}
+.paper .ident3 > tbody > tr > td + td{width:45%}
+.paper .garis-id{border-bottom:1.5px solid #000;margin:4px 0 6px}
+.paper table.halaman > thead > tr > td,.paper table.halaman > tbody > tr > td{padding:0;border:0}
+.paper .nil.uts td{padding:3px 6px}
+.paper .hadir-uts td{font-size:11px}
+.paper .ttd{display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;margin-top:20px;text-align:left;page-break-inside:avoid}
+.paper .ttd > div:nth-child(2){padding-left:40%}
+.paper .ttd .full{grid-column:1/-1;padding-left:32%}
+.paper .ttd .sp{height:58px}
+.paper .ttd b{text-decoration:underline}
+.paper .ttd .garis{display:inline-block;width:170px;border-bottom:1px solid #000}
+#print-area{display:none}
+
+/* ---------- Responsif ---------- */
+@media (max-width:1100px){.grid-4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:860px){
+  .sidebar{display:none}
+  .topbar{padding:16px 16px 6px}
+  .topbar h1{font-size:19px}
+  .view{padding:8px 16px 110px}
+  .grid-3,.grid-2{grid-template-columns:1fr}
+  .form-grid{grid-template-columns:1fr}
+  .bottomnav{display:flex;position:fixed;left:12px;right:12px;bottom:max(12px,env(safe-area-inset-bottom));z-index:5;border-radius:20px;padding:6px;justify-content:space-around}
+  .bottomnav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;border:0;background:none;padding:8px 2px;border-radius:14px;font-size:10.5px;font-weight:700;color:var(--muted);cursor:pointer}
+  .bottomnav button svg{width:20px;height:20px}
+  .bottomnav button.active{color:var(--primary);background:var(--primary-soft)}
+  .hero{flex-direction:column;align-items:flex-start;padding:18px}
+  .hero .spacer{display:none}
+  .search{max-width:none}
+  .card{padding:16px}
+  .paper{padding:16px;font-size:11.5px}
+  .modal-wrap{align-items:end;padding:0}
+  .modal{max-width:none;border-radius:20px 20px 0 0;max-height:92vh}
+}
+@media (max-width:420px){.grid-4{grid-template-columns:1fr 1fr}.stat{padding:14px}.stat-val{font-size:20px}}
+
+@media print{
+  @page{size:A4;margin:12mm}
+  body{background:#fff}
+  .app-root,#toast,.modal-wrap{display:none!important}
+  #print-area{display:block}
+  #print-area .paper{box-shadow:none;border-radius:0;padding:0;max-width:none;overflow:visible;page-break-after:always}
+  #print-area .paper:last-child{page-break-after:auto}
+  #print-area .paper + .paper{margin-top:0}
+}
+</style>
+</head>
+<body>
+<div id="app" class="app-root"></div>
+<div id="toast"></div>
+<div id="print-area"></div>
+
+<script type="module">
+// ======================= KONFIGURASI APLIKASI =======================
+const IS_PREVIEW = false; // Ubah menjadi false SAAT DEPLOY agar mode preview & data dummy hilang dan terhubung 100% ke Supabase
+const SUPABASE_URL = "https://brjcgqserlijgbbnnqri.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_LwFNXyLiLBoofsSNeUiGYw_h5UNJ6gB";
+// ====================================================================
+
+const NAMA_APP = 'e-Rapor SMK Mambaul Ulum';
+// Logo bawaan (tertanam agar selalu tampil, juga saat file dibuka langsung). Bisa diganti di menu Pengaturan.
+const LOGO_DEFAULT = 'data:image/webp;base64,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';
+const LS_KEY = 'rapor_smk_mu_sesi';
+
+// ---------- Utilitas ----------
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const clone = o => JSON.parse(JSON.stringify(o));
+const cmp = (a, b) => String(a ?? '').localeCompare(String(b ?? ''), 'id', { numeric: true });
+const icons = () => { try { window.lucide && window.lucide.createIcons(); } catch (e) { /* ikon opsional */ } };
+const tglIndo = d => { if (!d) return '-'; const x = new Date(d); return isNaN(x) ? d : x.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }); };
+const inisial = n => String(n || '?').trim().split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+const lsGet = () => { try { return JSON.parse(localStorage.getItem(LS_KEY) || 'null'); } catch (e) { return null; } };
+const lsSet = v => { try { v ? localStorage.setItem(LS_KEY, JSON.stringify(v)) : localStorage.removeItem(LS_KEY); } catch (e) { /* storage diblokir */ } };
+
+function errMsg(e) {
+  if (!e) return 'Terjadi kesalahan';
+  if (e.code === '23505') return 'Data sudah ada (duplikat). Periksa kode/username/NISN.';
+  if (e.code === '23503') return 'Data tidak bisa dihapus karena masih dipakai data lain.';
+  if (e.code === '23514') return 'Isian tidak valid (di luar batas yang diizinkan).';
+  if (e.code === '42501') return 'Akses ditolak oleh database. Pastikan SQL sudah dijalankan & Anda login.';
+  if (/Invalid login credentials/i.test(e.message || '')) return 'Email atau password admin salah.';
+  if (/Failed to fetch/i.test(e.message || '')) return 'Tidak dapat terhubung ke server. Periksa koneksi internet.';
+  return e.message || String(e);
+}
+
+function toast(msg, type = 'ok') {
+  const t = document.createElement('div');
+  t.className = 'toast ' + type;
+  t.textContent = msg;
+  $('#toast').appendChild(t);
+  setTimeout(() => t.remove(), type === 'err' ? 4500 : 2600);
+}
+
+function modal({ title, body = '', foot = '', wide = false }) {
+  const w = document.createElement('div');
+  w.className = 'modal-wrap';
+  w.innerHTML = `<div class="modal ${wide ? 'wide' : ''}">
+    <div class="modal-head"><h3>${esc(title)}</h3><button class="btn btn-ghost btn-icon" data-x><i data-lucide="x"></i></button></div>
+    <div class="modal-body">${body}</div>${foot ? `<div class="modal-foot">${foot}</div>` : ''}</div>`;
+  document.body.appendChild(w);
+  const close = () => w.remove();
+  w.addEventListener('click', e => { if (e.target === w || e.target.closest('[data-x]')) close(); });
+  icons();
+  return { el: w, close };
+}
+
+function konfirmasi(pesan, label = 'Hapus') {
+  return new Promise(res => {
+    const m = modal({ title: 'Konfirmasi', body: `<p style="margin:0">${esc(pesan)}</p>`,
+      foot: `<button class="btn btn-ghost" data-no>Batal</button><button class="btn btn-danger" data-yes>${esc(label)}</button>` });
+    $('[data-no]', m.el).onclick = () => { m.close(); res(false); };
+    $('[data-yes]', m.el).onclick = () => { m.close(); res(true); };
+    m.el.addEventListener('click', e => { if (e.target === m.el || e.target.closest('[data-x]')) res(false); });
+  });
+}
+
+async function busy(btn, fn) {
+  const html = btn.innerHTML; btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Memproses...';
+  try { return await fn(); } finally { btn.disabled = false; btn.innerHTML = html; icons(); }
+}
+
+const emptyState = (judul, ket = '', ikon = 'inbox') =>
+  `<div class="empty"><i data-lucide="${ikon}"></i><h4>${esc(judul)}</h4><div>${esc(ket)}</div></div>`;
+const loading = () => `<div class="card glass"><div class="stack"><div class="skeleton" style="width:40%"></div><div class="skeleton"></div><div class="skeleton" style="width:80%"></div><div class="skeleton" style="width:60%"></div></div></div>`;
+
+// ====================================================================
+//  LAPISAN DATA — Supabase (produksi) & memori lokal (preview)
+// ====================================================================
+let sb = null;
+
+const realApi = {
+  async list(t, o = {}) {
+    let q = sb.from(t).select(o.select || '*');
+    if (o.eq) for (const [k, v] of Object.entries(o.eq)) q = q.eq(k, v);
+    if (o.order) q = q.order(o.order, { ascending: o.asc !== false });
+    const { data, error } = await q; if (error) throw error; return data || [];
+  },
+  async count(t, eq) {
+    let q = sb.from(t).select('id', { count: 'exact', head: true });
+    if (eq) for (const [k, v] of Object.entries(eq)) q = q.eq(k, v);
+    const { count, error } = await q; if (error) throw error; return count || 0;
+  },
+  async insert(t, rows) { const { error } = await sb.from(t).insert(rows); if (error) throw error; },
+  async update(t, id, row) { const { error } = await sb.from(t).update(row).eq('id', id); if (error) throw error; },
+  async remove(t, id) { const { error } = await sb.from(t).delete().eq('id', id); if (error) throw error; },
+  async rpc(fn, p) { const { data, error } = await sb.rpc(fn, p); if (error) throw error; return data; },
+  async loginAdmin(email, password) { const { data, error } = await sb.auth.signInWithPassword({ email, password }); if (error) throw error; return data.user; },
+  async sessionAdmin() { const { data } = await sb.auth.getSession(); return data.session ? data.session.user : null; },
+  async logoutAdmin() { await sb.auth.signOut(); }
+};
+
+// ---------- Data dummy (HANYA mode preview) ----------
+const M = IS_PREVIEW ? {
+  sekolah: [{ id: 1, nama: 'SMK Mambaul Ulum', npsn: '20500000', alamat: 'Jl. Raya Mojosari Pacet', kota: 'Mojokerto', telepon: '', email: '', kepala_sekolah: 'Drs. H. Ahmad Fauzi, M.Pd.', nip_kepsek: '', logo: null }],
+  tahun_ajaran: [{ id: 1, nama: '2026/2027', semester: 'Ganjil', tanggal_uts: '2026-10-06', tanggal_rapor: '2026-12-19', aktif: true }],
+  jurusan: [{ id: 1, kode: 'DKV', nama: 'Desain Komunikasi Visual' }],
+  guru: [
+    { id: 1, nip: '', nama: 'Siti Aminah, S.Kom.', jk: 'P', telepon: '', username: 'guru', password_hash: 'guru123', aktif: true },
+    { id: 2, nip: '', nama: 'Muhammad Ridwan, S.Pd.I.', jk: 'L', telepon: '', username: 'ridwan', password_hash: 'ridwan', aktif: true }
+  ],
+  kelas: [{ id: 1, nama: 'XI DKV', tingkat: 'XI', jurusan_id: 1, wali_guru_id: 1 }],
+  siswa: [
+    { id: 1, nis: '2601', nisn: '0091234567', nama: 'Ahmad Zaki', jk: 'L', tempat_lahir: 'Jombang', tanggal_lahir: '2010-05-12', agama: 'Islam', nama_ortu: 'Sholeh', alamat: '', kelas_id: 1, aktif: true },
+    { id: 2, nis: '2602', nisn: '0091234568', nama: 'Nur Aisyah', jk: 'P', tempat_lahir: 'Jombang', tanggal_lahir: '2010-08-03', agama: 'Islam', nama_ortu: 'Hasan', alamat: '', kelas_id: 1, aktif: true }
+  ],
+  mapel: [
+    { id: 1, kode: 'PAI', nama: 'Pendidikan Agama Islam dan Budi Pekerti', kelompok: 'Umum', urut: 1, induk_id: null },
+    { id: 2, kode: 'DKV', nama: 'Desain Komunikasi Visual', kelompok: 'Kejuruan', urut: 3, induk_id: null },
+    { id: 3, kode: 'DKV1', nama: 'Menerapkan Desain Brief', kelompok: 'Kejuruan', urut: 1, induk_id: 2 },
+    { id: 4, kode: 'DKV2', nama: 'Proses Produksi Desain', kelompok: 'Kejuruan', urut: 2, induk_id: 2 },
+    { id: 5, kode: 'BAR', nama: 'Bahasa Arab', kelompok: 'Muatan Lokal', urut: 2, induk_id: null }
+  ],
+  mengajar: [{ id: 1, guru_id: 2, kelas_id: 1, mapel_id: 1 }, { id: 2, guru_id: 1, kelas_id: 1, mapel_id: 2 }, { id: 3, guru_id: 1, kelas_id: 1, mapel_id: 3 }, { id: 4, guru_id: 1, kelas_id: 1, mapel_id: 4 }, { id: 5, guru_id: 2, kelas_id: 1, mapel_id: 5 }],
+  nilai: [
+    { id: 1, siswa_id: 1, mapel_id: 2, tahun_ajaran_id: 1, jenis: 'AKHIR', nilai_akhir: 87, capaian: 'Menunjukkan penguasaan yang baik dalam memahami dan menguasai teknik dasar dari elemen dan prinsip desain.' },
+    { id: 2, siswa_id: 1, mapel_id: 3, tahun_ajaran_id: 1, jenis: 'AKHIR', formatif: { cp1: [89, 90, null], cp2: [88, null, null], cp3: [88, null, null] }, sts: 94, sas: 90, nilai_akhir: 90, capaian: null }
+  ],
+  cp_mapel: [],
+  catatan_rapor: [{ id: 1, siswa_id: 1, tahun_ajaran_id: 1, jenis: 'AKHIR', sakit: 1, izin: 0, alpa: 2, kokurikuler: 'Pada semester ini, ananda menunjukkan capaian yang baik dalam penguatan profil lulusan melalui kegiatan kokurikuler dengan tema Generasi Sehat dan Bugar.', ekstrakurikuler: 'Pramuka: B', prestasi: '', catatan_wali: 'Pertahankan semangat belajarmu.', keputusan: '' }]
+} : null;
+let seq = 100;
+const UNIK = { jurusan: ['kode'], guru: ['username'], siswa: ['nisn'], kelas: ['nama'] };
+
+const prevApi = {
+  async list(t, o = {}) {
+    let r = clone(M[t] || []);
+    if (o.eq) r = r.filter(x => Object.entries(o.eq).every(([k, v]) => x[k] == v));
+    if (o.order) r.sort((a, b) => cmp(a[o.order], b[o.order]) * (o.asc === false ? -1 : 1));
+    if (o.select && o.select !== '*') { const ks = o.select.split(',').map(s => s.trim()); r = r.map(x => Object.fromEntries(ks.map(k => [k, x[k]]))); }
+    return r;
+  },
+  async count(t, eq) { return (await this.list(t, { eq })).length; },
+  async insert(t, rows) {
+    for (const r of [].concat(rows)) {
+      for (const k of (UNIK[t] || [])) if (M[t].some(x => String(x[k]).toLowerCase() === String(r[k]).toLowerCase())) throw { code: '23505' };
+      if (t === 'mengajar' && M.mengajar.some(x => x.kelas_id == r.kelas_id && x.mapel_id == r.mapel_id)) throw { code: '23505' };
+      const row = { id: ++seq, ...r };
+      if (t === 'guru' && !row.password_hash) row.password_hash = row.username;
+      if (['guru', 'siswa'].includes(t) && row.aktif === undefined) row.aktif = true;
+      M[t].push(row);
+    }
+  },
+  async update(t, id, row) {
+    const x = M[t].find(r => r.id == id); if (!x) throw new Error('Data tidak ditemukan');
+    for (const k of (UNIK[t] || [])) if (row[k] !== undefined && M[t].some(o => o.id != id && String(o[k]).toLowerCase() === String(row[k]).toLowerCase())) throw { code: '23505' };
+    Object.assign(x, row);
+  },
+  async remove(t, id) {
+    const refs = { kelas: [['siswa', 'kelas_id'], ['mengajar', 'kelas_id']], guru: [['mengajar', 'guru_id'], ['kelas', 'wali_guru_id']], mapel: [['mengajar', 'mapel_id']], jurusan: [['kelas', 'jurusan_id']] };
+    M[t] = M[t].filter(r => r.id != id);
+    if (t === 'siswa') { M.nilai = M.nilai.filter(n => n.siswa_id != id); M.catatan_rapor = M.catatan_rapor.filter(n => n.siswa_id != id); }
+    for (const [rt, col] of (refs[t] || [])) {
+      if (rt === 'mengajar') M.mengajar = M.mengajar.filter(r => r[col] != id); else M[rt].forEach(r => { if (r[col] == id) r[col] = null; });
+    }
+  },
+  async rpc(fn, p) { if (!PRPC[fn]) throw new Error('Fungsi ' + fn + ' tidak tersedia'); return clone(PRPC[fn](p || {})); },
+  async loginAdmin(email) { return { email: email || 'admin@smk-mambaululum.sch.id' }; },
+  async sessionAdmin() { return null; },
+  async logoutAdmin() { }
+};
+
+// Simulasi fungsi RPC Supabase untuk mode preview
+function pAkses(tok) {
+  if (!tok) { if (S.user && S.user.peran === 'admin') return { peran: 'admin' }; throw new Error('Sesi berakhir, silakan login kembali'); }
+  const [peran, id] = String(tok).split(':'); return { peran, ref_id: +id };
+}
+function pTaAktif() { const t = M.tahun_ajaran.filter(x => x.aktif).sort((a, b) => b.id - a.id)[0]; if (!t) throw new Error('Belum ada tahun ajaran aktif. Atur di menu Pengaturan.'); return t; }
+function pCekMengajar(a, k, m) {
+  if (a.peran === 'admin') return;
+  if (a.peran === 'guru' && (M.mengajar.some(x => x.guru_id === a.ref_id && x.kelas_id == k && x.mapel_id == m) || M.kelas.some(x => x.id == k && x.wali_guru_id === a.ref_id))) return;
+  throw new Error('Akses ditolak: Anda tidak mengajar mapel ini dan bukan wali kelas tersebut');
+}
+function pCekJenis(j) { if (!['UTS', 'AKHIR'].includes(j)) throw new Error('Jenis rapor harus UTS atau AKHIR'); }
+function pCekWali(a, k) { if (a.peran === 'admin') return; if (a.peran === 'guru' && M.kelas.some(x => x.id == k && x.wali_guru_id === a.ref_id)) return; throw new Error('Akses ditolak: Anda bukan wali kelas ini'); }
+const siswaKelas = k => M.siswa.filter(s => s.kelas_id == k && s.aktif).sort((a, b) => cmp(a.nama, b.nama));
+const KEL_URUT = { 'Umum': 1, 'Kejuruan': 2, 'Muatan Lokal': 3, 'Pilihan': 4 };
+
+const PRPC = {
+  login_pengguna({ p_username: u = '', p_password: pw }) {
+    const g = M.guru.find(x => x.aktif && x.username.toLowerCase() === u.trim().toLowerCase());
+    if (g && g.password_hash === pw) return { token: 'guru:' + g.id, peran: 'guru', id: g.id, nama: g.nama };
+    throw new Error('Username atau password salah');
+  },
+  logout_pengguna() { return true; },
+  ganti_password({ p_token, p_lama, p_baru }) {
+    const a = pAkses(p_token);
+    if (String(p_baru || '').length < 6) throw new Error('Password baru minimal 6 karakter');
+    const x = M[a.peran].find(r => r.id === a.ref_id);
+    if (x.password_hash !== p_lama) throw new Error('Password lama salah');
+    x.password_hash = p_baru; return true;
+  },
+  guru_beranda({ p_token }) {
+    const a = pAkses(p_token); if (a.peran !== 'guru') throw new Error('Akses ditolak');
+    const g = M.guru.find(x => x.id === a.ref_id);
+    const ta = M.tahun_ajaran.filter(x => x.aktif).sort((x, y) => y.id - x.id)[0] || null;
+    return {
+      guru: { id: g.id, nama: g.nama, nip: g.nip, username: g.username },
+      tahun_ajaran: ta,
+      mengajar: M.mengajar.filter(m => m.guru_id === g.id || M.kelas.some(k => k.id === m.kelas_id && k.wali_guru_id === g.id)).map(m => {
+        const k = M.kelas.find(x => x.id === m.kelas_id), mp = M.mapel.find(x => x.id === m.mapel_id);
+        return { kelas_id: k.id, kelas: k.nama, mapel_id: mp.id, mapel: mp.nama, induk_id: mp.induk_id || null, punya_sub: M.mapel.some(c => c.induk_id === mp.id),
+          milik: m.guru_id === g.id, pengampu: (M.guru.find(x => x.id === m.guru_id) || {}).nama || '-', jumlah_siswa: siswaKelas(k.id).length };
+      }).sort((x, y) => cmp(x.kelas, y.kelas)),
+      wali: M.kelas.filter(k => k.wali_guru_id === g.id).map(k => ({ kelas_id: k.id, kelas: k.nama }))
+    };
+  },
+  nilai_kelas({ p_token, p_kelas_id, p_mapel_id }) {
+    const a = pAkses(p_token); pCekMengajar(a, p_kelas_id, p_mapel_id); const ta = pTaAktif();
+    const cp = M.cp_mapel.find(x => x.kelas_id == p_kelas_id && x.mapel_id == p_mapel_id && x.tahun_ajaran_id === ta.id);
+    return {
+      cp: cp ? { cp1: cp.cp1, cp2: cp.cp2, cp3: cp.cp3 } : null,
+      siswa: siswaKelas(p_kelas_id).map(s => {
+        const n = M.nilai.find(x => x.siswa_id === s.id && x.mapel_id == p_mapel_id && x.tahun_ajaran_id === ta.id && x.jenis === 'AKHIR') || {};
+        return { siswa_id: s.id, nisn: s.nisn, nama: s.nama, formatif: n.formatif || null, sts: n.sts ?? null, sas: n.sas ?? null, nilai_akhir: n.nilai_akhir ?? null, capaian: n.capaian ?? null };
+      })
+    };
+  },
+  simpan_nilai({ p_token, p_kelas_id, p_mapel_id, p_cp, p_data }) {
+    const a = pAkses(p_token); pCekMengajar(a, p_kelas_id, p_mapel_id); const ta = pTaAktif(); let c = 0;
+    if (p_cp) {
+      const cp = M.cp_mapel.find(x => x.kelas_id == p_kelas_id && x.mapel_id == p_mapel_id && x.tahun_ajaran_id === ta.id);
+      if (cp) Object.assign(cp, p_cp); else M.cp_mapel.push({ id: ++seq, kelas_id: +p_kelas_id, mapel_id: +p_mapel_id, tahun_ajaran_id: ta.id, ...p_cp });
+    }
+    for (const r of p_data) {
+      if (!M.siswa.some(s => s.id === r.siswa_id && s.kelas_id == p_kelas_id)) continue;
+      const n = M.nilai.find(x => x.siswa_id === r.siswa_id && x.mapel_id == p_mapel_id && x.tahun_ajaran_id === ta.id && x.jenis === 'AKHIR');
+      const isi = { formatif: r.formatif ?? null, sts: r.sts ?? null, sas: r.sas ?? null, nilai_akhir: r.nilai_akhir ?? null, capaian: r.capaian ?? null };
+      if (n) Object.assign(n, isi);
+      else M.nilai.push({ id: ++seq, siswa_id: r.siswa_id, mapel_id: +p_mapel_id, tahun_ajaran_id: ta.id, jenis: 'AKHIR', ...isi });
+      c++;
+    }
+    return c;
+  },
+  catatan_kelas({ p_token, p_kelas_id, p_jenis }) {
+    const a = pAkses(p_token); pCekJenis(p_jenis); pCekWali(a, p_kelas_id); const ta = pTaAktif();
+    return siswaKelas(p_kelas_id).map(s => {
+      const c = M.catatan_rapor.find(x => x.siswa_id === s.id && x.tahun_ajaran_id === ta.id && x.jenis === p_jenis) || {};
+      return { siswa_id: s.id, nisn: s.nisn, nama: s.nama, sakit: c.sakit || 0, izin: c.izin || 0, alpa: c.alpa || 0, kokurikuler: c.kokurikuler || null, ekstrakurikuler: c.ekstrakurikuler || null, prestasi: c.prestasi || null, catatan_wali: c.catatan_wali || null, keputusan: c.keputusan || null };
+    });
+  },
+  simpan_catatan({ p_token, p_kelas_id, p_jenis, p_data }) {
+    const a = pAkses(p_token); pCekJenis(p_jenis); pCekWali(a, p_kelas_id); const ta = pTaAktif(); let n = 0;
+    for (const r of p_data) {
+      if (!M.siswa.some(s => s.id === r.siswa_id && s.kelas_id == p_kelas_id)) continue;
+      const c = M.catatan_rapor.find(x => x.siswa_id === r.siswa_id && x.tahun_ajaran_id === ta.id && x.jenis === p_jenis);
+      const { siswa_id, ...isi } = r;
+      if (c) Object.assign(c, isi); else M.catatan_rapor.push({ id: ++seq, siswa_id, tahun_ajaran_id: ta.id, jenis: p_jenis, ...isi });
+      n++;
+    }
+    return n;
+  },
+  rapor_siswa({ p_token, p_siswa_id, p_ta_id, p_jenis }) {
+    const a = pAkses(p_token); pCekJenis(p_jenis);
+    const s = M.siswa.find(x => x.id == p_siswa_id); if (!s) throw new Error('Siswa tidak ditemukan');
+    const k = M.kelas.find(x => x.id === s.kelas_id) || null;
+    if (a.peran === 'guru' && (!k || k.wali_guru_id !== a.ref_id)) throw new Error('Akses ditolak: Anda bukan wali kelas siswa ini');
+    const ta = p_ta_id ? M.tahun_ajaran.find(x => x.id == p_ta_id) : M.tahun_ajaran.filter(x => x.aktif).sort((x, y) => y.id - x.id)[0];
+    if (!ta) throw new Error('Tahun ajaran tidak ditemukan');
+    const mapelKelas = M.mengajar.filter(m => k && m.kelas_id === k.id).map(m => m.mapel_id);
+    const indukDipakai = M.mapel.filter(m => mapelKelas.includes(m.id) && m.induk_id).map(m => m.induk_id);
+    const nilai = M.mapel.map(m => {
+      // nilai diinput sekali; rapor tengah & akhir semester memakai data yang sama
+      const n = M.nilai.find(x => x.siswa_id === s.id && x.mapel_id === m.id && x.tahun_ajaran_id === ta.id && x.jenis === 'AKHIR');
+      return (mapelKelas.includes(m.id) || indukDipakai.includes(m.id) || n) ? { id: m.id, induk_id: m.induk_id || null, mapel: m.nama, kelompok: m.kelompok, urut: m.urut,
+        formatif: n ? n.formatif || null : null, sts: n ? n.sts ?? null : null, sas: n ? n.sas ?? null : null, nilai_akhir: n ? n.nilai_akhir ?? null : null, capaian: n ? n.capaian : null } : null;
+    }).filter(Boolean);
+    const c = M.catatan_rapor.find(x => x.siswa_id === s.id && x.tahun_ajaran_id === ta.id && x.jenis === p_jenis) || null;
+    const j = k ? M.jurusan.find(x => x.id === k.jurusan_id) : null;
+    const w = k ? M.guru.find(x => x.id === k.wali_guru_id) : null;
+    const { kelas_id, aktif, agama, ...sv } = s;
+    return {
+      jenis: p_jenis, sekolah: M.sekolah[0], tahun_ajaran: { id: ta.id, nama: ta.nama, semester: ta.semester, tanggal_rapor: ta.tanggal_rapor, tanggal_uts: ta.tanggal_uts || null },
+      siswa: sv, kelas: k ? { nama: k.nama, tingkat: k.tingkat } : null,
+      jurusan: j ? { kode: j.kode, nama: j.nama } : null, wali: w ? { nama: w.nama, nip: w.nip } : null,
+      nilai,
+      catatan: c ? { sakit: c.sakit, izin: c.izin, alpa: c.alpa, kokurikuler: c.kokurikuler || null, ekstrakurikuler: c.ekstrakurikuler, prestasi: c.prestasi, catatan_wali: c.catatan_wali, keputusan: c.keputusan } : null
+    };
+  }
+};
+
+const api = IS_PREVIEW ? prevApi : realApi;
+
+// ====================================================================
+//  STATE & NAVIGASI
+// ====================================================================
+const S = { user: null, page: null, guru: null, taAktif: null, jenis: 'AKHIR', logo: LOGO_DEFAULT };
+function terapkanLogo(src) {
+  S.logo = src || LOGO_DEFAULT;
+  const fav = document.getElementById('favicon'); if (fav) { fav.href = S.logo; fav.type = S.logo.startsWith('data:image/webp') ? 'image/webp' : 'image/png'; }
+}
+async function muatLogo() {
+  try { const r = await api.list('sekolah', { select: 'logo' }); terapkanLogo(r[0] && r[0].logo); } catch (e) { terapkanLogo(null); }
+}
+function kecilkanGambar(file, maks = 300) {
+  return new Promise((res, rej) => {
+    if (!/^image\//.test(file.type)) return rej(new Error('File harus berupa gambar (PNG/JPG)'));
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => {
+      const k = Math.min(1, maks / Math.max(img.width, img.height));
+      const c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+      res(c.toDataURL('image/png'));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('Gambar tidak bisa dibaca')); };
+    img.src = url;
+  });
+}
+const JENIS = [['UTS', 'Tengah Semester (UTS)'], ['AKHIR', 'Akhir Semester']];
+const jenisLbl = j => j === 'UTS' ? 'UTS' : 'Akhir Semester';
+function pilihJenis(onChange) {
+  return { html: `<div class="tabs" style="margin:0 0 14px" data-jenis>${JENIS.map(([k, l]) => `<button type="button" data-j="${k}" class="${S.jenis === k ? 'active' : ''}">${l}</button>`).join('')}</div>`,
+    bind: host => $$('[data-j]', host).forEach(b => b.onclick = () => { if (S.jenis === b.dataset.j) return; S.jenis = b.dataset.j; $$('[data-j]', host).forEach(x => x.classList.toggle('active', x === b)); onChange(); }) };
+}
+const tok = () => (S.user && S.user.token) || null;
+
+const MENU = {
+  admin: [
+    { id: 'beranda', label: 'Beranda', icon: 'layout-dashboard', mob: 1 },
+    { grp: 'Data Master' },
+    { id: 'siswa', label: 'Siswa', icon: 'users', mob: 1 },
+    { id: 'guru', label: 'Guru', icon: 'user-round-check' },
+    { id: 'kelas', label: 'Kelas', icon: 'school' },
+    { id: 'mapel', label: 'Mata Pelajaran', icon: 'book-open' },
+    { id: 'jurusan', label: 'Konsentrasi Keahlian', icon: 'git-branch' },
+    { id: 'mengajar', label: 'Pembagian Mengajar', icon: 'calendar-range' },
+    { grp: 'Penilaian' },
+    { id: 'nilai', label: 'Input Nilai', icon: 'pencil-line', mob: 1 },
+    { id: 'catatan', label: 'Kehadiran & Catatan', icon: 'clipboard-list' },
+    { id: 'rapor', label: 'Cetak Rapor', icon: 'printer', mob: 1 },
+    { grp: 'Sistem' },
+    { id: 'pengaturan', label: 'Pengaturan', icon: 'settings' }
+  ],
+  guru: [
+    { id: 'beranda', label: 'Beranda', icon: 'layout-dashboard', mob: 1 },
+    { id: 'nilai', label: 'Input Nilai', icon: 'pencil-line', mob: 1 },
+    { id: 'catatan', label: 'Kehadiran & Catatan', icon: 'clipboard-list', mob: 1, wali: 1 },
+    { id: 'rapor', label: 'Cetak Rapor', icon: 'printer', mob: 1, wali: 1 },
+    { id: 'akun', label: 'Akun Saya', icon: 'user-cog', mob: 1 }
+  ]
+};
+const menuUser = () => MENU[S.user.peran].filter(m => !m.wali || (S.guru && S.guru.wali.length));
+
+function go(page) { S.page = page; renderShell(); }
+
+// ====================================================================
+//  LOGIN
+// ====================================================================
+function renderLogin() {
+  const app = $('#app');
+  app.innerHTML = `${IS_PREVIEW ? '<div class="preview-banner">MODE PREVIEW AKTIF — data contoh di memori browser, belum terhubung ke Supabase</div>' : ''}
+  <div class="login-wrap"><div class="login-card glass">
+    <div class="login-head">
+      <img class="brand-logo" src="${S.logo}" alt="Logo sekolah">
+      <h1>e-Rapor SMK</h1><div class="muted">SMK Mambaul Ulum</div>
+    </div>
+    <div class="tabs"><button class="active" data-tab="user">Guru</button><button data-tab="admin">Admin</button></div>
+    <form id="f-user" class="stack">
+      <div class="field"><label>Username Guru</label><input class="input" name="u" required autocomplete="username" placeholder="contoh: siti"></div>
+      <div class="field"><label>Password</label><input class="input" type="password" name="p" required autocomplete="current-password" placeholder="••••••••"></div>
+      <button class="btn btn-primary btn-block" type="submit"><i data-lucide="log-in"></i> Masuk</button>
+    </form>
+    <form id="f-admin" class="stack hidden">
+      <div class="field"><label>Email Admin</label><input class="input" type="email" name="e" required autocomplete="email" placeholder="admin@sekolah.sch.id"></div>
+      <div class="field"><label>Password</label><input class="input" type="password" name="p" required autocomplete="current-password" placeholder="••••••••"></div>
+      <button class="btn btn-primary btn-block" type="submit"><i data-lucide="shield-check"></i> Masuk sebagai Admin</button>
+    </form>
+    ${IS_PREVIEW ? `<div class="quick"><div class="small muted" style="text-align:center;font-weight:700">LOGIN CEPAT (PREVIEW)</div>
+      <div class="quick-row" style="grid-template-columns:1fr 1fr"><button class="btn btn-ghost btn-sm" data-q="admin">Admin</button><button class="btn btn-ghost btn-sm" data-q="guru">Guru</button></div></div>` : ''}
+    <p class="small muted" style="text-align:center;margin:18px 0 0">© ${new Date().getFullYear()} SMK Mambaul Ulum</p>
+  </div></div>`;
+  icons();
+  $$('.tabs button', app).forEach(b => b.onclick = () => {
+    $$('.tabs button', app).forEach(x => x.classList.toggle('active', x === b));
+    $('#f-user').classList.toggle('hidden', b.dataset.tab !== 'user');
+    $('#f-admin').classList.toggle('hidden', b.dataset.tab !== 'admin');
+  });
+  $('#f-user').onsubmit = e => { e.preventDefault(); const f = e.target; busy($('button[type=submit]', f), () => loginUser(f.u.value, f.p.value)); };
+  $('#f-admin').onsubmit = e => { e.preventDefault(); const f = e.target; busy($('button[type=submit]', f), () => loginAdmin(f.e.value, f.p.value)); };
+  if (IS_PREVIEW) $$('[data-q]', app).forEach(b => b.onclick = () => {
+    if (b.dataset.q === 'admin') loginAdmin('admin@smk-mambaululum.sch.id', 'preview');
+    if (b.dataset.q === 'guru') loginUser('guru', 'guru123');
+  });
+}
+
+async function loginAdmin(email, pw) {
+  try {
+    const u = await api.loginAdmin(email.trim(), pw);
+    S.user = { peran: 'admin', nama: 'Administrator', email: u.email };
+    toast('Selamat datang, Admin');
+    await masuk();
+  } catch (e) { toast(errMsg(e), 'err'); }
+}
+
+async function loginUser(u, p) {
+  try {
+    const r = await api.rpc('login_pengguna', { p_username: u, p_password: p });
+    S.user = { peran: r.peran, nama: r.nama, id: r.id, token: r.token };
+    lsSet(S.user);
+    toast('Selamat datang, ' + r.nama);
+    await masuk();
+  } catch (e) { toast(errMsg(e), 'err'); }
+}
+
+async function masuk() {
+  if (S.user.peran === 'guru') { S.guru = await api.rpc('guru_beranda', { p_token: tok() }); S.taAktif = S.guru.tahun_ajaran; }
+  else { const ta = await api.list('tahun_ajaran', { eq: { aktif: true }, order: 'id', asc: false }); S.taAktif = ta[0] || null; }
+  S.page = MENU[S.user.peran][0].id;
+  renderShell();
+}
+
+async function logout() {
+  try {
+    if (S.user.peran === 'admin') await api.logoutAdmin();
+    else await api.rpc('logout_pengguna', { p_token: tok() });
+  } catch (e) { /* sesi mungkin sudah berakhir */ }
+  lsSet(null); S.user = null; S.guru = null; S.page = null;
+  renderLogin();
+}
+
+// ====================================================================
+//  SHELL (Sidebar desktop + Bottom nav mobile)
+// ====================================================================
+function renderShell() {
+  const items = menuUser();
+  const cur = items.find(m => m.id === S.page) || items.find(m => m.id);
+  S.page = cur.id;
+  const peranLbl = { admin: 'Administrator', guru: 'Guru' }[S.user.peran];
+  const mob = items.filter(m => m.mob);
+  const pakaiSheet = items.filter(m => m.id).length > mob.length;
+  const tombolKeluar = !pakaiSheet && mob.length < 4;
+  $('#app').innerHTML = `${IS_PREVIEW ? '<div class="preview-banner">MODE PREVIEW AKTIF — perubahan hanya tersimpan sementara di browser</div>' : ''}
+  <div class="layout" style="${IS_PREVIEW ? 'height:calc(100% - 30px)' : ''}">
+    <aside class="sidebar glass">
+      <div class="brand"><img class="brand-logo" src="${S.logo}" alt="Logo sekolah"><div><div class="brand-title">e-Rapor SMK</div><div class="brand-sub">SMK Mambaul Ulum</div></div></div>
+      <nav class="nav">${items.map(m => m.grp ? `<div class="nav-label">${esc(m.grp)}</div>` :
+        `<button class="nav-item ${m.id === S.page ? 'active' : ''}" data-go="${m.id}"><i data-lucide="${m.icon}"></i>${esc(m.label)}</button>`).join('')}</nav>
+      <div class="user-box"><div class="avatar">${esc(inisial(S.user.nama))}</div><div class="info"><div class="name">${esc(S.user.nama)}</div><div class="small muted">${peranLbl}</div></div>
+        <button class="btn btn-ghost btn-icon" id="btn-out" title="Keluar"><i data-lucide="log-out"></i></button></div>
+    </aside>
+    <main class="main">
+      <header class="topbar"><h1>${esc(cur.label)}</h1><div class="spacer"></div>
+        ${S.taAktif ? `<span class="badge b-green"><i data-lucide="calendar" style="width:12px;height:12px"></i> ${esc(S.taAktif.nama)} · ${esc(S.taAktif.semester)}</span>` : '<span class="badge b-red">TA belum aktif</span>'}
+      </header>
+      <div class="view" id="view"></div>
+    </main>
+    <nav class="bottomnav glass">
+      ${(pakaiSheet ? mob.slice(0, 4) : mob).map(m => `<button class="${m.id === S.page ? 'active' : ''}" data-go="${m.id}"><i data-lucide="${m.icon}"></i>${esc(m.label.split(' ')[0])}</button>`).join('')}
+      ${pakaiSheet ? `<button id="btn-sheet" class="${mob.slice(0, 4).some(m => m.id === S.page) ? '' : 'active'}"><i data-lucide="grid-2x2"></i>Menu</button>` : tombolKeluar ? `<button id="btn-out-m"><i data-lucide="log-out"></i>Keluar</button>` : ''}
+    </nav>
+  </div>`;
+  $$('[data-go]').forEach(b => b.onclick = () => go(b.dataset.go));
+  $('#btn-out').onclick = logout;
+  const om = $('#btn-out-m'); if (om) om.onclick = logout;
+  const sh = $('#btn-sheet'); if (sh) sh.onclick = bukaSheet;
+  icons();
+  renderView();
+}
+
+function bukaSheet() {
+  const items = menuUser().filter(m => m.id);
+  const m = modal({ title: 'Menu', body: `<div class="sheet-grid">${items.map(i => `<button class="${i.id === S.page ? 'active' : ''}" data-s="${i.id}"><i data-lucide="${i.icon}"></i>${esc(i.label)}</button>`).join('')}
+    <button data-s="__out" style="color:var(--danger)"><i data-lucide="log-out"></i>Keluar</button></div>` });
+  $$('[data-s]', m.el).forEach(b => b.onclick = () => { m.close(); b.dataset.s === '__out' ? logout() : go(b.dataset.s); });
+}
+
+async function renderView() {
+  const v = $('#view');
+  v.innerHTML = loading();
+  try {
+    const fn = PAGES[S.page];
+    await fn(v);
+  } catch (e) {
+    v.innerHTML = `<div class="card glass">${emptyState('Gagal memuat data', errMsg(e), 'alert-triangle')}</div>`;
+    if (/Sesi berakhir/i.test(errMsg(e))) { toast('Sesi berakhir, silakan login kembali', 'err'); setTimeout(logout, 800); }
+  }
+  icons();
+}
+
+// ====================================================================
+//  KONFIGURASI DATA MASTER (CRUD generik)
+// ====================================================================
+const JK = [['L', 'Laki-laki'], ['P', 'Perempuan']];
+const MASTER = {
+  siswa: {
+    judul: 'Data Siswa', order: 'nama',
+    select: 'id,nis,nisn,nama,jk,tempat_lahir,tanggal_lahir,agama,nama_ortu,alamat,kelas_id,aktif',
+    refs: ['kelas'], filter: 'kelas_id', impor: true,
+    cols: [['nisn', 'NISN'], ['nis', 'NIS'], ['nama', 'Nama', r => `<b>${esc(r.nama)}</b>`], ['jk', 'L/P'], ['kelas_id', 'Kelas', (r, R) => esc(nm(R.kelas, r.kelas_id))], ['aktif', 'Status', r => r.aktif ? '<span class="badge b-green">Aktif</span>' : '<span class="badge b-gray">Nonaktif</span>']],
+    fields: [
+      { k: 'nisn', l: 'NISN', req: 1 }, { k: 'nis', l: 'NIS' }, { k: 'nama', l: 'Nama Lengkap', req: 1, full: 1 },
+      { k: 'jk', l: 'Jenis Kelamin', type: 'select', opts: JK }, { k: 'kelas_id', l: 'Kelas', type: 'ref', ref: 'kelas' },
+      { k: 'tempat_lahir', l: 'Tempat Lahir' }, { k: 'tanggal_lahir', l: 'Tanggal Lahir', type: 'date' },
+      { k: 'agama', l: 'Agama', type: 'select', opts: ['Islam', 'Kristen', 'Katolik', 'Hindu', 'Buddha', 'Konghucu'].map(x => [x, x]) },
+      { k: 'nama_ortu', l: 'Nama Orang Tua/Wali' }, { k: 'alamat', l: 'Alamat', type: 'textarea', full: 1 },
+      { k: 'aktif', l: 'Siswa aktif', type: 'check', def: true }
+    ]
+  },
+  guru: {
+    judul: 'Data Guru', order: 'nama', select: 'id,nip,nama,jk,telepon,username,aktif',
+    cols: [['nip', 'NIP'], ['nama', 'Nama', r => `<b>${esc(r.nama)}</b>`], ['jk', 'L/P'], ['username', 'Username'], ['telepon', 'Telepon'], ['aktif', 'Status', r => r.aktif ? '<span class="badge b-green">Aktif</span>' : '<span class="badge b-gray">Nonaktif</span>']],
+    fields: [
+      { k: 'nama', l: 'Nama Lengkap & Gelar', req: 1, full: 1 }, { k: 'nip', l: 'NIP / NUPTK' },
+      { k: 'jk', l: 'Jenis Kelamin', type: 'select', opts: JK }, { k: 'telepon', l: 'Telepon' },
+      { k: 'username', l: 'Username Login', req: 1 },
+      { k: 'password_hash', l: 'Password Login', type: 'password', hint: 'Kosongkan: tambah baru = username, edit = tidak berubah' },
+      { k: 'aktif', l: 'Guru aktif', type: 'check', def: true }
+    ]
+  },
+  kelas: {
+    judul: 'Data Kelas', order: 'nama', refs: ['jurusan', 'guru'],
+    cols: [['nama', 'Kelas', r => `<b>${esc(r.nama)}</b>`], ['tingkat', 'Tingkat'], ['jurusan_id', 'Konsentrasi', (r, R) => esc(nm(R.jurusan, r.jurusan_id, 'kode'))], ['wali_guru_id', 'Wali Kelas', (r, R) => esc(nm(R.guru, r.wali_guru_id))]],
+    fields: [
+      { k: 'nama', l: 'Nama Kelas', req: 1, ph: 'contoh: X TJKT 1' },
+      { k: 'tingkat', l: 'Tingkat', type: 'select', req: 1, opts: [['X', 'X (Fase E)'], ['XI', 'XI (Fase F)'], ['XII', 'XII (Fase F)']] },
+      { k: 'jurusan_id', l: 'Konsentrasi Keahlian', type: 'ref', ref: 'jurusan' },
+      { k: 'wali_guru_id', l: 'Wali Kelas', type: 'ref', ref: 'guru' }
+    ]
+  },
+  mapel: {
+    judul: 'Mata Pelajaran', order: 'urut', refs: ['mapel'],
+    cols: [['kode', 'Kode'], ['nama', 'Mata Pelajaran', (r, R) => r.induk_id ? `<span class="muted">↳ ${esc(nm(R.mapel, r.induk_id))} ›</span> <b>${esc(r.nama)}</b>` : `<b>${esc(r.nama)}</b>`], ['kelompok', 'Kelompok', r => `<span class="badge ${{ Umum: 'b-blue', Kejuruan: 'b-green', Pilihan: 'b-amber' }[r.kelompok] || 'b-gray'}">${esc(r.kelompok)}</span>`], ['urut', 'Urutan']],
+    sort: (a, b, R) => {
+      const atas = r => (r.induk_id && R.mapel.find(x => x.id == r.induk_id)) || r;
+      const pa = atas(a), pb = atas(b);
+      return (KEL_URUT[pa.kelompok] - KEL_URUT[pb.kelompok]) || (pa.urut - pb.urut) || cmp(pa.nama, pb.nama) || ((a.induk_id ? 1 : 0) - (b.induk_id ? 1 : 0)) || (a.urut - b.urut) || cmp(a.nama, b.nama);
+    },
+    fields: [
+      { k: 'nama', l: 'Nama Mata Pelajaran / Elemen', req: 1, full: 1 }, { k: 'kode', l: 'Kode Singkat' },
+      { k: 'kelompok', l: 'Kelompok', type: 'select', req: 1, opts: ['Umum', 'Kejuruan', 'Muatan Lokal', 'Pilihan'].map(x => [x, x]) },
+      { k: 'urut', l: 'Urutan di Rapor', type: 'number', def: 1 },
+      { k: 'induk_id', l: 'Sub dari Mapel (opsional)', type: 'ref', ref: 'mapel', hint: 'Isi untuk elemen yang tampil sebagai 3.1, 3.2, dst. di rapor UTS (mis. di bawah Desain Komunikasi Visual). Di rapor semester hanya mapel induk yang tampil.' }
+    ]
+  },
+  jurusan: {
+    judul: 'Konsentrasi Keahlian', order: 'kode',
+    cols: [['kode', 'Kode', r => `<span class="badge b-green">${esc(r.kode)}</span>`], ['nama', 'Nama Konsentrasi Keahlian', r => `<b>${esc(r.nama)}</b>`]],
+    fields: [{ k: 'kode', l: 'Kode', req: 1, ph: 'contoh: TJKT' }, { k: 'nama', l: 'Nama Konsentrasi Keahlian', req: 1, full: 1 }]
+  },
+  mengajar: {
+    judul: 'Pembagian Mengajar', refs: ['guru', 'kelas', 'mapel'], filter: 'kelas_id',
+    sort: (a, b, R) => cmp(nm(R.kelas, a.kelas_id), nm(R.kelas, b.kelas_id)) || cmp(nm(R.mapel, a.mapel_id), nm(R.mapel, b.mapel_id)),
+    cols: [['kelas_id', 'Kelas', (r, R) => `<b>${esc(nm(R.kelas, r.kelas_id))}</b>`], ['mapel_id', 'Mata Pelajaran', (r, R) => esc(nm(R.mapel, r.mapel_id))], ['guru_id', 'Guru Pengampu', (r, R) => esc(nm(R.guru, r.guru_id))]],
+    fields: [{ k: 'kelas_id', l: 'Kelas', type: 'ref', ref: 'kelas', req: 1 }, { k: 'mapel_id', l: 'Mata Pelajaran', type: 'ref', ref: 'mapel', req: 1 }, { k: 'guru_id', l: 'Guru Pengampu', type: 'ref', ref: 'guru', req: 1, full: 1 }]
+  },
+  tahun_ajaran: {
+    judul: 'Tahun Ajaran & Semester', order: 'id', asc: false,
+    cols: [['nama', 'Tahun Ajaran', r => `<b>${esc(r.nama)}</b>`], ['semester', 'Semester'], ['tanggal_uts', 'Tgl Rapor UTS', r => esc(tglIndo(r.tanggal_uts))], ['tanggal_rapor', 'Tgl Rapor Semester', r => esc(tglIndo(r.tanggal_rapor))], ['aktif', 'Status', r => r.aktif ? '<span class="badge b-green">Aktif</span>' : `<button class="btn btn-ghost btn-sm" data-aktif="${r.id}">Jadikan aktif</button>`]],
+    fields: [{ k: 'nama', l: 'Tahun Ajaran', req: 1, ph: 'contoh: 2026/2027' }, { k: 'semester', l: 'Semester', type: 'select', req: 1, opts: [['Ganjil', 'Ganjil'], ['Genap', 'Genap']] }, { k: 'tanggal_uts', l: 'Tanggal Rapor UTS', type: 'date' }, { k: 'tanggal_rapor', l: 'Tanggal Rapor Akhir Semester', type: 'date' }]
+  }
+};
+const REF_SELECT = { kelas: 'id,nama,tingkat', guru: 'id,nama', jurusan: 'id,kode,nama', mapel: 'id,nama,kelompok,urut,induk_id' };
+function nm(list, id, f = 'nama') { const x = (list || []).find(r => r.id == id); return x ? x[f] : '-'; }
+async function muatRefs(names = []) {
+  const R = {};
+  await Promise.all(names.map(async n => { R[n] = (await api.list(n, { select: REF_SELECT[n], order: 'nama' })); }));
+  if (R.kelas) R.kelas.sort((a, b) => cmp(a.nama, b.nama));
+  return R;
+}
+
+async function pageMaster(key, host) {
+  const cfg = MASTER[key];
+  const R = await muatRefs(cfg.refs);
+  let rows = await api.list(key, { select: cfg.select, order: cfg.order, asc: cfg.asc });
+  if (cfg.sort) rows.sort((a, b) => cfg.sort(a, b, R));
+  let q = '', fil = '';
+
+  host.innerHTML = `<div class="card glass">
+    <div class="card-head"><h3>${esc(cfg.judul)}</h3><span class="badge b-gray" data-count></span><div class="spacer"></div>
+      <div class="toolbar">
+        <div class="search"><i data-lucide="search"></i><input class="input" placeholder="Cari..." data-q></div>
+        ${cfg.filter ? `<select class="input" style="width:auto" data-f><option value="">Semua kelas</option>${R.kelas.map(k => `<option value="${k.id}">${esc(k.nama)}</option>`).join('')}</select>` : ''}
+        ${cfg.impor ? '<button class="btn btn-ghost" data-imp><i data-lucide="upload"></i> Impor</button>' : ''}
+        <button class="btn btn-primary" data-add><i data-lucide="plus"></i> Tambah</button>
+      </div></div>
+    <div data-tbl></div></div>`;
+
+  const tampil = () => {
+    const f = rows.filter(r => (!fil || r[cfg.filter] == fil) && (!q || cfg.cols.some(([k]) => String(k.endsWith('_id') ? nm(R[k.replace(/_id$/, '').replace('wali_guru', 'guru')], r[k]) : r[k] ?? '').toLowerCase().includes(q))));
+    $('[data-count]', host).textContent = f.length + ' data';
+    $('[data-tbl]', host).innerHTML = f.length ? `<div class="table-wrap"><table class="tbl"><thead><tr><th class="num">No</th>${cfg.cols.map(c => `<th>${c[1]}</th>`).join('')}<th class="act">Aksi</th></tr></thead>
+      <tbody>${f.map((r, i) => `<tr><td class="num">${i + 1}</td>${cfg.cols.map(([k, , fn]) => `<td>${fn ? fn(r, R) : esc(r[k] ?? '-')}</td>`).join('')}
+        <td class="act"><button class="btn btn-ghost btn-icon" data-ed="${r.id}" title="Ubah"><i data-lucide="pencil"></i></button> <button class="btn btn-ghost btn-icon" data-del="${r.id}" title="Hapus" style="color:var(--danger)"><i data-lucide="trash-2"></i></button></td></tr>`).join('')}</tbody></table></div>`
+      : emptyState(rows.length ? 'Tidak ada hasil' : 'Belum ada data', rows.length ? 'Coba kata kunci lain.' : 'Klik tombol "Tambah" untuk mengisi data.');
+    $$('[data-ed]', host).forEach(b => b.onclick = () => formMaster(key, rows.find(r => r.id == b.dataset.ed), R, ulang));
+    $$('[data-del]', host).forEach(b => b.onclick = async () => {
+      if (!(await konfirmasi('Hapus data ini? Tindakan tidak bisa dibatalkan.'))) return;
+      try { await api.remove(key, b.dataset.del); toast('Data dihapus'); ulang(); } catch (e) { toast(errMsg(e), 'err'); }
+    });
+    $$('[data-aktif]', host).forEach(b => b.onclick = () => busy(b, async () => {
+      try {
+        for (const r of rows.filter(x => x.aktif)) await api.update('tahun_ajaran', r.id, { aktif: false });
+        await api.update('tahun_ajaran', b.dataset.aktif, { aktif: true });
+        const ta = await api.list('tahun_ajaran', { eq: { aktif: true } }); S.taAktif = ta[0] || null;
+        toast('Tahun ajaran aktif diperbarui'); renderShell();
+      } catch (e) { toast(errMsg(e), 'err'); }
+    }));
+    icons();
+  };
+  const ulang = async () => {
+    rows = await api.list(key, { select: cfg.select, order: cfg.order, asc: cfg.asc }); if (cfg.sort) rows.sort((a, b) => cfg.sort(a, b, R));
+    if (key === 'tahun_ajaran') { const akt = rows.find(r => r.aktif) || null; const ganti = JSON.stringify(akt) !== JSON.stringify(S.taAktif); S.taAktif = akt; if (ganti) return renderShell(); }
+    tampil();
+  };
+  $('[data-q]', host).oninput = e => { q = e.target.value.trim().toLowerCase(); tampil(); };
+  if (cfg.filter) $('[data-f]', host).onchange = e => { fil = e.target.value; tampil(); };
+  $('[data-add]', host).onclick = () => formMaster(key, null, R, ulang);
+  if (cfg.impor) $('[data-imp]', host).onclick = () => imporSiswa(R, ulang);
+  tampil();
+}
+
+function formMaster(key, row, R, onDone) {
+  const cfg = MASTER[key];
+  const val = f => row ? (f.type === 'password' ? '' : row[f.k]) : f.def;
+  const input = f => {
+    const v = val(f), req = f.req ? 'required' : '';
+    if (f.type === 'select') return `<select class="input" name="${f.k}" ${req}><option value="">— Pilih —</option>${f.opts.map(([a, b]) => `<option value="${esc(a)}" ${v == a ? 'selected' : ''}>${esc(b)}</option>`).join('')}</select>`;
+    if (f.type === 'ref') return `<select class="input" name="${f.k}" ${req}><option value="">— Pilih —</option>${(R[f.ref] || []).map(o => `<option value="${o.id}" ${v == o.id ? 'selected' : ''}>${esc(o.kode && f.ref === 'jurusan' ? o.kode + ' — ' + o.nama : o.nama)}</option>`).join('')}</select>`;
+    if (f.type === 'textarea') return `<textarea class="input" name="${f.k}" ${req}>${esc(v)}</textarea>`;
+    if (f.type === 'check') return `<label class="check"><input type="checkbox" name="${f.k}" ${v ? 'checked' : ''}> ${esc(f.l)}</label>`;
+    return `<input class="input" type="${f.type || 'text'}" name="${f.k}" value="${esc(v)}" ${req} placeholder="${esc(f.ph || '')}" ${f.type === 'password' ? 'autocomplete="new-password"' : ''}>`;
+  };
+  const m = modal({
+    title: (row ? 'Ubah ' : 'Tambah ') + cfg.judul.replace(/^Data /, ''),
+    body: `<form class="form-grid" id="fm">${cfg.fields.map(f => `<div class="field ${f.full ? 'full' : ''}">${f.type === 'check' ? '' : `<label>${esc(f.l)}${f.req ? ' <span style="color:var(--danger)">*</span>' : ''}</label>`}${input(f)}${f.hint ? `<div class="hint">${esc(f.hint)}</div>` : ''}</div>`).join('')}</form>`,
+    foot: `<button class="btn btn-ghost" data-x>Batal</button><button class="btn btn-primary" data-save><i data-lucide="save"></i> Simpan</button>`
+  });
+  const fm = $('#fm', m.el);
+  const simpan = async () => {
+    if (!fm.reportValidity()) return;
+    const d = {};
+    for (const f of cfg.fields) {
+      const el = fm.elements[f.k];
+      if (f.type === 'check') { d[f.k] = el.checked; continue; }
+      let v = el.value.trim();
+      if (f.type === 'password') { if (v) { if (v.length < 6) return toast('Password minimal 6 karakter', 'err'); d[f.k] = v; } continue; }
+      if (f.type === 'ref' || f.type === 'number') v = v === '' ? null : Number(v);
+      d[f.k] = v === '' ? null : v;
+    }
+    await busy($('[data-save]', m.el), async () => {
+      try {
+        if (row) await api.update(key, row.id, d); else await api.insert(key, d);
+        toast(row ? 'Perubahan disimpan' : 'Data ditambahkan'); m.close(); await onDone();
+      } catch (e) { toast(errMsg(e), 'err'); }
+    });
+  };
+  $('[data-save]', m.el).onclick = simpan;
+  fm.onsubmit = e => { e.preventDefault(); simpan(); };
+}
+
+function imporSiswa(R, onDone) {
+  const m = modal({
+    title: 'Impor Data Siswa', wide: true,
+    body: `<p class="muted" style="margin-top:0">Salin dari Excel/Google Sheets lalu tempel di bawah. Urutan kolom: <b>NISN, NIS, Nama, L/P, Nama Kelas</b>. Baris judul akan dilewati otomatis.</p>
+      <textarea class="input" rows="10" id="imp-txt" placeholder="0091234567&#9;2601&#9;Ahmad Zaki&#9;L&#9;X TJKT 1"></textarea><div id="imp-info" class="small muted" style="margin-top:8px"></div>`,
+    foot: `<button class="btn btn-ghost" data-x>Batal</button><button class="btn btn-primary" data-go-imp><i data-lucide="upload"></i> Impor</button>`
+  });
+  const parse = () => $('#imp-txt', m.el).value.split(/\r?\n/).map(l => l.split(/\t|;|,/).map(s => s.trim())).filter(c => c.length >= 3 && /^\d+$/.test(c[0]));
+  $('#imp-txt', m.el).oninput = () => { $('#imp-info', m.el).textContent = parse().length + ' baris siswa terbaca.'; };
+  $('[data-go-imp]', m.el).onclick = e => busy(e.currentTarget, async () => {
+    const rows = parse();
+    if (!rows.length) return toast('Tidak ada data valid. Kolom pertama harus NISN (angka).', 'err');
+    const tidakAda = new Set();
+    const data = rows.map(c => {
+      const k = c[4] ? R.kelas.find(x => x.nama.toLowerCase() === c[4].toLowerCase()) : null;
+      if (c[4] && !k) tidakAda.add(c[4]);
+      return { nisn: c[0], nis: c[1] || null, nama: c[2], jk: /^p/i.test(c[3] || '') ? 'P' : /^l/i.test(c[3] || '') ? 'L' : null, kelas_id: k ? k.id : null, aktif: true };
+    });
+    try {
+      await api.insert('siswa', data);
+      toast(data.length + ' siswa berhasil diimpor' + (tidakAda.size ? ' (kelas tidak dikenal: ' + [...tidakAda].join(', ') + ')' : ''));
+      m.close(); await onDone();
+    } catch (er) { toast(errMsg(er), 'err'); }
+  });
+}
+
+// ====================================================================
+//  HALAMAN
+// ====================================================================
+async function pageBerandaAdmin(v) {
+  const [nSiswa, nGuru, nKelas, nMapel] = await Promise.all([api.count('siswa', { aktif: true }), api.count('guru', { aktif: true }), api.count('kelas'), api.count('mapel')]);
+  let progres = '';
+  const kelas = await api.list('kelas', { select: 'id,nama', order: 'nama' });
+  if (S.taAktif) {
+    const [siswa, mengajar, nilai] = await Promise.all([
+      api.list('siswa', { select: 'id,kelas_id', eq: { aktif: true } }), api.list('mengajar', { select: 'kelas_id,mapel_id' }),
+      api.list('nilai', { select: 'sts,sas', eq: { tahun_ajaran_id: S.taAktif.id, jenis: 'AKHIR' } })]);
+    const nUts = nilai.filter(n => n.sts !== null && n.sts !== undefined).length, nAkhir = nilai.filter(n => n.sas !== null && n.sas !== undefined).length;
+    const target = mengajar.reduce((t, m) => t + siswa.filter(s => s.kelas_id === m.kelas_id).length, 0);
+    const bar = (lbl, n) => { const pct = target ? Math.min(100, Math.round(n / target * 100)) : 0;
+      return `<div style="margin-top:12px"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><b style="color:var(--text)">${lbl}</b><span class="small muted">${n} / ${target} · <b style="color:var(--primary)">${pct}%</b></span></div><div class="progress"><span style="width:${pct}%"></span></div></div>`; };
+    progres = `<div class="card glass"><div class="card-head" style="margin-bottom:4px"><h3>Progres Pengisian Nilai</h3><div class="spacer"></div><span class="small muted">${esc(S.taAktif.nama)} · ${esc(S.taAktif.semester)}</span></div>
+      ${bar('Nilai STS (tengah semester)', nUts)}${bar('Nilai SAS (akhir semester)', nAkhir)}
+      <p class="small muted" style="margin:10px 0 0">Jumlah nilai (siswa × mapel) yang sudah terisi.</p></div>`;
+  }
+  const stat = (n, l, ic, c) => `<div class="stat glass"><div class="stat-icon ${c}"><i data-lucide="${ic}"></i></div><div><div class="stat-val">${n}</div><div class="stat-lbl">${l}</div></div></div>`;
+  v.innerHTML = `<div class="hero"><div><h2>Assalamu'alaikum, Admin 👋</h2><p>Kelola data dan rapor SMK Mambaul Ulum dari satu tempat.</p></div><div class="spacer"></div>
+      <div class="hero-badge">${S.taAktif ? `Tahun Ajaran Aktif<br><span style="font-size:15px">${esc(S.taAktif.nama)} · ${esc(S.taAktif.semester)}</span>` : 'Belum ada tahun ajaran aktif'}</div></div>
+    <div class="grid grid-4">${stat(nSiswa, 'Siswa Aktif', 'users', 'c-green')}${stat(nGuru, 'Guru Aktif', 'user-round-check', 'c-blue')}${stat(nKelas, 'Kelas', 'school', 'c-amber')}${stat(nMapel, 'Mata Pelajaran', 'book-open', 'c-red')}</div>
+    <div style="height:16px"></div>
+    ${!S.taAktif ? `<div class="card glass">${emptyState('Tahun ajaran belum diatur', 'Buka menu Pengaturan untuk menambah & mengaktifkan tahun ajaran.', 'calendar-x')}<div style="text-align:center"><button class="btn btn-primary" data-go="pengaturan">Buka Pengaturan</button></div></div>` : progres}
+    <div class="grid grid-2" style="margin-top:16px">
+      <div class="card glass" style="margin:0"><div class="card-head"><h3>Akses Cepat</h3></div>
+        ${[['nilai', 'Input Nilai', 'pencil-line'], ['catatan', 'Kehadiran & Catatan Wali', 'clipboard-list'], ['rapor', 'Cetak Rapor', 'printer'], ['siswa', 'Kelola Data Siswa', 'users']].map(([id, l, ic]) =>
+          `<div class="list-item" data-go="${id}"><div class="stat-icon c-green" style="width:38px;height:38px"><i data-lucide="${ic}"></i></div><div class="grow t">${l}</div><i data-lucide="chevron-right"></i></div>`).join('')}</div>
+      <div class="card glass" style="margin:0"><div class="card-head"><h3>Daftar Kelas</h3><div class="spacer"></div><span class="badge b-gray">${kelas.length}</span></div>
+        ${kelas.length ? kelas.slice(0, 8).map(k => `<div class="list-item" data-go="kelas"><div class="avatar">${esc(inisial(k.nama))}</div><div class="grow t">${esc(k.nama)}</div></div>`).join('') : emptyState('Belum ada kelas', 'Tambahkan di menu Kelas.', 'school')}</div>
+    </div>`;
+  $$('[data-go]', v).forEach(b => b.onclick = () => go(b.dataset.go));
+}
+
+async function pageBerandaGuru(v) {
+  S.guru = await api.rpc('guru_beranda', { p_token: tok() });
+  const g = S.guru, diampu = g.mengajar.filter(m => m.milik);
+  v.innerHTML = `<div class="hero"><div><h2>Assalamu'alaikum, ${esc(g.guru.nama)} 👋</h2><p>Silakan isi nilai mata pelajaran yang Anda ampu.</p></div><div class="spacer"></div>
+      <div class="hero-badge">${g.tahun_ajaran ? `${esc(g.tahun_ajaran.nama)}<br>Semester ${esc(g.tahun_ajaran.semester)}` : 'TA belum aktif'}</div></div>
+    <div class="grid grid-2">
+      <div class="card glass" style="margin:0"><div class="card-head"><h3>Mapel yang Diampu</h3><div class="spacer"></div><span class="badge b-gray">${diampu.length}</span></div>
+        ${diampu.length ? diampu.map((m, i) => `<div class="list-item" data-m="${i}"><div class="stat-icon c-green" style="width:38px;height:38px"><i data-lucide="book-open"></i></div>
+          <div class="grow"><div class="t">${esc(m.mapel)}</div><div class="small muted">${esc(m.kelas)} · ${m.jumlah_siswa} siswa</div></div><i data-lucide="chevron-right"></i></div>`).join('')
+          : emptyState('Belum ada pembagian mengajar', 'Hubungi admin untuk mengatur mapel yang Anda ampu.', 'book-x')}</div>
+      <div class="card glass" style="margin:0"><div class="card-head"><h3>Wali Kelas</h3></div>
+        ${g.wali.length ? g.wali.map(w => `<div class="list-item" data-go="catatan"><div class="avatar">${esc(inisial(w.kelas))}</div><div class="grow"><div class="t">${esc(w.kelas)}</div><div class="small muted">Isi nilai semua mapel, kehadiran, catatan & cetak rapor</div></div><i data-lucide="chevron-right"></i></div>`).join('')
+          : emptyState('Bukan wali kelas', 'Menu kehadiran & cetak rapor hanya untuk wali kelas.', 'user-x')}</div>
+    </div>`;
+  $$('[data-m]', v).forEach(b => b.onclick = () => { S.pilihNilai = diampu[b.dataset.m].kelas_id + ':' + diampu[b.dataset.m].mapel_id; go('nilai'); });
+  $$('[data-go]', v).forEach(b => b.onclick = () => go(b.dataset.go));
+}
+
+function capaianOtomatis(n, mapel) {
+  if (n === null || n === '' || isNaN(n)) return '';
+  n = Number(n);
+  if (n >= 90) return `Menunjukkan penguasaan yang sangat baik dalam seluruh capaian kompetensi ${mapel}.`;
+  if (n >= 80) return `Menunjukkan penguasaan yang baik dalam capaian kompetensi ${mapel}.`;
+  if (n >= 70) return `Menunjukkan penguasaan yang cukup dalam capaian kompetensi ${mapel}, perlu peningkatan pada beberapa materi.`;
+  return `Perlu bimbingan dalam memahami capaian kompetensi ${mapel}.`;
+}
+const predikat = n => n === null || n === '' || isNaN(n) ? '<span class="badge b-gray">—</span>' : n >= 90 ? '<span class="badge b-green">Sangat Baik</span>' : n >= 80 ? '<span class="badge b-blue">Baik</span>' : n >= 70 ? '<span class="badge b-amber">Cukup</span>' : '<span class="badge b-red">Perlu Bimbingan</span>';
+
+// ---------- Perhitungan nilai (mengikuti form nilai Excel sekolah) ----------
+const CPK = ['cp1', 'cp2', 'cp3'];
+const NUM = v => v === null || v === undefined || v === '' || isNaN(v) ? null : Number(v);
+const rata = arr => { const v = arr.map(NUM).filter(x => x !== null); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; };
+const bulat = v => v === null ? null : Math.round(v);
+const rataCPk = (f, k) => rata((f && f[k]) || []);
+const rataCP = f => rata(CPK.flatMap(k => (f && f[k]) || []));            // N. RATA-RATA CP
+const semuaS = f => CPK.flatMap(k => (f && f[k]) || []);
+const nilaiUTS = n => rata([...semuaS(n.formatif), n.sts]);                // rapor tengah semester = rata-rata semua S + STS
+const nilaiRapor = n => rata([...semuaS(n.formatif), n.sts, n.sas]);       // N. RAPOR = rata-rata semua nilai (S CP1-CP3, STS, SAS)
+
+function capaianDariCP(n, cps, mapel) {
+  if (n === null || n === '' || isNaN(n)) return '';
+  n = Number(n);
+  const d = (cps || []).map(x => String(x || '').trim().replace(/\.+$/, '')).filter(Boolean).map(x => x[0].toLowerCase() + x.slice(1));
+  if (!d.length) return capaianOtomatis(n, mapel);
+  const gab = d.length > 1 ? d.slice(0, -1).join('; ') + '; serta ' + d[d.length - 1] : d[0];
+  const pred = n >= 90 ? 'sangat baik' : n >= 80 ? 'baik' : 'cukup';
+  return n >= 70 ? `Menunjukkan penguasaan yang ${pred} dalam ${gab}.` : `Perlu bimbingan dalam ${gab}.`;
+}
+
+// Baca file form nilai Excel (sheet "CP 1", "CP 2", "CP 3" berisi S1–S3, sheet "NILAI UJIAN" berisi N. STS & N. SAS)
+async function bacaFormExcel(file) {
+  const XLSX = await import('https://cdn.jsdelivr.net/npm/xlsx@0.18.5/xlsx.mjs');
+  const wb = XLSX.read(await file.arrayBuffer(), { type: 'array' });
+  const kunci = t => String(t ?? '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  const hasil = { cp: {}, siswa: {} };
+  const ambil = nama => hasil.siswa[nama] || (hasil.siswa[nama] = { formatif: { cp1: [null, null, null], cp2: [null, null, null], cp3: [null, null, null] } });
+  for (const sn of wb.SheetNames) {
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[sn], { header: 1, defval: null, raw: true });
+    const h = rows.findIndex(r => r && r.some(c => kunci(c) === 'NAMA'));
+    if (h < 0) continue;
+    const head = rows[h].map(kunci), iNama = head.indexOf('NAMA');
+    const mCP = kunci(sn).match(/^CP(\d)/);
+    if (mCP && +mCP[1] >= 1 && +mCP[1] <= 3) {
+      const k = 'cp' + mCP[1];
+      const desk = rows.slice(0, h).flat().filter(c => typeof c === 'string' && c.trim().length > 25 && !/CAPAIAN PEMBELAJARAN/i.test(c));
+      if (desk.length) hasil.cp[k] = desk[0].trim();
+      const iS = ['S1', 'S2', 'S3'].map(x => head.indexOf(x));
+      rows.slice(h + 1).forEach(r => { if (!r || !r[iNama]) return; const o = ambil(kunci(r[iNama])); iS.forEach((ci, x) => { if (ci >= 0) o.formatif[k][x] = NUM(r[ci]); }); });
+    } else {
+      const iSts = head.findIndex(x => x.endsWith('STS')), iSas = head.findIndex(x => x.endsWith('SAS'));
+      if (iSts < 0 && iSas < 0) continue;
+      rows.slice(h + 1).forEach(r => { if (!r || !r[iNama]) return; const o = ambil(kunci(r[iNama])); if (iSts >= 0) o.sts = NUM(r[iSts]); if (iSas >= 0) o.sas = NUM(r[iSas]); });
+    }
+  }
+  hasil.kunci = kunci;
+  return hasil;
+}
+
+async function pageNilai(v) {
+  let semua;
+  if (S.user.peran === 'admin') {
+    const [R, mj] = await Promise.all([muatRefs(['kelas', 'mapel', 'guru']), api.list('mengajar')]);
+    semua = mj.map(m => {
+      const mp = R.mapel.find(x => x.id == m.mapel_id) || {};
+      return { key: m.kelas_id + ':' + m.mapel_id, kelas: nm(R.kelas, m.kelas_id), mapel: mp.nama || '-', induk: mp.induk_id ? nm(R.mapel, mp.induk_id) : null,
+        induk_id: mp.induk_id || null, punya_sub: R.mapel.some(c => c.induk_id == m.mapel_id), guru: nm(R.guru, m.guru_id) };
+    });
+  } else {
+    semua = S.guru.mengajar.map(m => ({ key: m.kelas_id + ':' + m.mapel_id, kelas: m.kelas, mapel: m.mapel, induk_id: m.induk_id || null, punya_sub: !!m.punya_sub,
+      guru: m.milik ? null : 'perwalian · ' + m.pengampu,
+      induk: m.induk_id ? ((S.guru.mengajar.find(x => x.mapel_id === m.induk_id) || {}).mapel || null) : null }));
+  }
+  semua.sort((a, b) => cmp(a.kelas, b.kelas) || cmp(a.induk || a.mapel, b.induk || b.mapel) || cmp(a.mapel, b.mapel));
+  if (!S.taAktif) { v.innerHTML = `<div class="card glass">${emptyState('Tahun ajaran belum aktif', 'Admin perlu mengaktifkan tahun ajaran terlebih dahulu.', 'calendar-x')}</div>`; return; }
+  if (!semua.length) { v.innerHTML = `<div class="card glass">${emptyState('Belum ada pembagian mengajar', S.user.peran === 'admin' ? 'Atur di menu Pembagian Mengajar terlebih dahulu.' : 'Hubungi admin sekolah.', 'calendar-range')}</div>`; return; }
+  const pilih = S.pilihNilai && semua.some(o => o.key === S.pilihNilai) ? S.pilihNilai : semua[0].key;
+  v.innerHTML = `<div class="card glass"><div class="card-head"><h3>Pilih Kelas & Mata Pelajaran</h3></div>
+      <select class="input" id="sel-km">${semua.map(o => `<option value="${o.key}" ${o.key === pilih ? 'selected' : ''}>${esc(o.kelas)} — ${o.induk ? esc(o.induk) + ' › ' : ''}${esc(o.mapel)}${o.guru ? ' (' + esc(o.guru) + ')' : ''}</option>`).join('')}</select>
+      <p class="small muted" style="margin:10px 0 0">Nilai cukup diinput sekali. Rapor tengah semester = rata-rata semua nilai CP & STS; rapor akhir semester = rata-rata semua nilai CP, STS & SAS.</p></div>
+    <div id="nilai-box" style="margin-top:16px"></div>`;
+  const muat = async () => {
+    S.pilihNilai = $('#sel-km').value;
+    const [kelas_id, mapel_id] = S.pilihNilai.split(':').map(Number);
+    const o = semua.find(x => x.key === S.pilihNilai);
+    const mode = o.punya_sub ? 'induk' : o.induk_id ? 'sub' : 'penuh';   // induk: nilai dari sub-mapel; sub: elemen tanpa capaian
+    const box = $('#nilai-box'); box.innerHTML = loading();
+    try {
+      const res = await api.rpc('nilai_kelas', { p_token: tok(), p_kelas_id: kelas_id, p_mapel_id: mapel_id });
+      const data = res.siswa || [], cp = res.cp || {};
+      if (!data.length) { box.innerHTML = `<div class="card glass">${emptyState('Belum ada siswa di kelas ini', 'Tambahkan siswa dan pilih kelasnya di menu Siswa.', 'users')}</div>`; icons(); return; }
+      const inp = (attr, val, w = 54) => `<input class="input input-sm" style="min-width:${w}px;width:${w}px;padding:6px 5px;text-align:center" type="number" min="0" max="100" step="0.01" ${attr} value="${val ?? ''}">`;
+      const komponen = mode !== 'induk';
+      const head = komponen
+        ? `<tr><th class="num" rowspan="2">No</th><th rowspan="2">Nama Siswa</th>${CPK.map((k, i) => `<th colspan="3" style="text-align:center">CP ${i + 1}</th>`).join('')}<th rowspan="2">Rata² CP</th><th rowspan="2">STS</th><th rowspan="2">SAS</th><th rowspan="2">Nilai Rapor</th><th rowspan="2">Predikat</th>${mode === 'penuh' ? '<th rowspan="2" style="min-width:260px">Capaian Pembelajaran</th>' : ''}</tr>
+           <tr>${CPK.map(() => '<th>S1</th><th>S2</th><th>S3</th>').join('')}</tr>`
+        : `<tr><th class="num">No</th><th>Nama Siswa</th><th>Nilai Rapor</th><th>Predikat</th><th style="min-width:300px">Capaian Pembelajaran</th></tr>`;
+      const baris = (r, i) => komponen
+        ? `<tr data-id="${r.siswa_id}"><td class="num">${i + 1}</td><td style="min-width:150px"><b>${esc(r.nama)}</b><div class="small muted">${esc(r.nisn)}</div></td>
+            ${CPK.map(k => [0, 1, 2].map(x => `<td style="padding:6px 3px">${inp(`data-f="${k}" data-x="${x}"`, ((r.formatif || {})[k] || [])[x])}</td>`).join('')).join('')}
+            <td class="ctr" data-rcp style="text-align:center;font-weight:700">${bulat(rataCP(r.formatif)) ?? '-'}</td>
+            <td>${inp('data-sts', r.sts)}</td><td>${inp('data-sas', r.sas)}</td><td>${inp('data-n readonly tabindex="-1" title="Otomatis: rata-rata semua nilai" style="background:rgba(16,185,129,.08);font-weight:700"', bulat(nilaiRapor(r)) ?? '', 64)}</td>
+            <td data-p>${predikat(bulat(nilaiRapor(r)))}</td>${mode === 'penuh' ? `<td><textarea class="input input-sm" rows="2" data-c>${esc(r.capaian)}</textarea></td>` : ''}</tr>`
+        : `<tr data-id="${r.siswa_id}"><td class="num">${i + 1}</td><td><b>${esc(r.nama)}</b><div class="small muted">${esc(r.nisn)}</div></td>
+            <td>${inp('data-n placeholder="otomatis"', r.nilai_akhir, 90)}</td><td data-p>${predikat(NUM(r.nilai_akhir))}</td><td><textarea class="input input-sm" rows="2" data-c>${esc(r.capaian)}</textarea></td></tr>`;
+      box.innerHTML = `${mode === 'penuh' ? `<div class="card glass"><div class="card-head"><h3>Capaian Pembelajaran (CP)</h3><div class="spacer"></div><span class="small muted">Dipakai untuk menyusun capaian otomatis</span></div>
+          <div class="stack" style="gap:10px">${CPK.map((k, i) => `<div class="field"><label>CP ${i + 1}</label><input class="input" data-cpdesk="${k}" value="${esc(cp[k])}" placeholder="contoh: Menerapkan strategi dekomposisi, pengenalan pola, abstraksi, dan algoritma ..."></div>`).join('')}</div></div>` : ''}
+        <div class="card glass"><div class="card-head"><div><h3>${o.induk ? esc(o.induk) + ' › ' : ''}${esc(o.mapel)}</h3><div class="small muted">${esc(o.kelas)} · ${data.length} siswa · Nilai 0–100${mode === 'induk' ? ' · Mapel ini punya sub-mapel: Nilai Rapor dikosongkan = rata-rata nilai sub-mapel' : ' · Nilai Rapor otomatis = rata-rata semua nilai (S1–S3 CP1–CP3, STS, SAS)'}</div></div><div class="spacer"></div>
+          <div class="toolbar">${komponen ? '<label class="btn btn-ghost" style="margin:0"><i data-lucide="file-spreadsheet"></i> Impor Form Excel<input type="file" accept=".xlsx,.xls" id="imp-xls" hidden></label>' : ''}
+            ${mode !== 'sub' ? '<button class="btn btn-ghost" id="btn-auto"><i data-lucide="sparkles"></i> Capaian Otomatis</button>' : ''}<button class="btn btn-primary" id="btn-sv"><i data-lucide="save"></i> Simpan Nilai</button></div></div>
+          <div class="table-wrap"><table class="tbl nilai-tbl"><thead>${head}</thead><tbody>${data.map(baris).join('')}</tbody></table></div></div>`;
+      icons();
+      const nilaiBaris = tr => ({
+        formatif: komponen ? Object.fromEntries(CPK.map(k => [k, [0, 1, 2].map(x => NUM($(`[data-f="${k}"][data-x="${x}"]`, tr).value))])) : null,
+        sts: komponen ? NUM($('[data-sts]', tr).value) : null, sas: komponen ? NUM($('[data-sas]', tr).value) : null
+      });
+      const hitung = tr => {
+        const n = nilaiBaris(tr);
+        $('[data-rcp]', tr).textContent = bulat(rataCP(n.formatif)) ?? '-';
+        $('[data-n]', tr).value = bulat(nilaiRapor(n)) ?? '';
+        $('[data-p]', tr).innerHTML = predikat(NUM($('[data-n]', tr).value));
+      };
+      $$('[data-f],[data-sts],[data-sas]', box).forEach(el => el.oninput = () => hitung(el.closest('tr')));
+      $$('[data-n]', box).forEach(el => el.oninput = () => { el.closest('tr').querySelector('[data-p]').innerHTML = predikat(NUM(el.value)); });
+      const ba = $('#btn-auto');
+      if (ba) ba.onclick = () => {
+        const cps = CPK.map(k => { const el = $(`[data-cpdesk="${k}"]`, box); return el ? el.value : ''; });
+        let c = 0;
+        $$('tbody tr', box).forEach(tr => { const n = $('[data-n]', tr).value, t = $('[data-c]', tr); if (n !== '' && !t.value.trim()) { t.value = capaianDariCP(n, cps, o.mapel); c++; } });
+        toast(c ? c + ' capaian diisi otomatis (yang kosong saja)' : 'Tidak ada capaian kosong yang punya nilai', 'info');
+      };
+      const ix = $('#imp-xls');
+      if (ix) ix.onchange = async e => {
+        const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+        try {
+          const h = await bacaFormExcel(f);
+          let cocok = 0; const pakai = new Set();
+          $$('tbody tr', box).forEach(tr => {
+            const nama = $('td:nth-child(2) b', tr).textContent, d = h.siswa[h.kunci(nama)];
+            if (!d) return; cocok++; pakai.add(h.kunci(nama));
+            CPK.forEach(k => [0, 1, 2].forEach(x => { $(`[data-f="${k}"][data-x="${x}"]`, tr).value = d.formatif[k][x] ?? ''; }));
+            if (d.sts !== undefined) $('[data-sts]', tr).value = d.sts ?? '';
+            if (d.sas !== undefined) $('[data-sas]', tr).value = d.sas ?? '';
+            hitung(tr);
+          });
+          CPK.forEach(k => { const el = $(`[data-cpdesk="${k}"]`, box); if (el && h.cp[k]) el.value = h.cp[k]; });
+          const lewat = Object.keys(h.siswa).filter(k => !pakai.has(k)).length;
+          toast(`${cocok} siswa terisi dari Excel${lewat ? `, ${lewat} nama di Excel tidak cocok` : ''}. Periksa lalu klik Simpan.`, cocok ? 'ok' : 'err');
+        } catch (er) { toast('Gagal membaca Excel: ' + errMsg(er), 'err'); }
+      };
+      $('#btn-sv').onclick = e => busy(e.currentTarget, async () => {
+        const rows = [];
+        for (const tr of $$('tbody tr', box)) {
+          const n = nilaiBaris(tr), na = NUM($('[data-n]', tr).value);
+          const angkaSemua = [...(n.formatif ? CPK.flatMap(k => n.formatif[k]) : []), n.sts, n.sas, na].filter(x => x !== null);
+          if (angkaSemua.some(x => x < 0 || x > 100)) { toast('Nilai harus antara 0 dan 100 (' + $('td:nth-child(2) b', tr).textContent + ')', 'err'); return; }
+          const c = $('[data-c]', tr);
+          rows.push({ siswa_id: Number(tr.dataset.id), formatif: n.formatif, sts: n.sts, sas: n.sas, nilai_akhir: na, capaian: c ? (c.value.trim() || null) : null });
+        }
+        const cpEl = $$('[data-cpdesk]', box);
+        const p_cp = cpEl.length ? Object.fromEntries(cpEl.map(el => [el.dataset.cpdesk, el.value.trim() || null])) : null;
+        try { const c = await api.rpc('simpan_nilai', { p_token: tok(), p_kelas_id: kelas_id, p_mapel_id: mapel_id, p_cp, p_data: rows }); toast(c + ' nilai tersimpan'); }
+        catch (er) { toast(errMsg(er), 'err'); }
+      });
+    } catch (e) { box.innerHTML = `<div class="card glass">${emptyState('Gagal memuat', errMsg(e), 'alert-triangle')}</div>`; icons(); }
+  };
+  $('#sel-km').onchange = muat;
+  await muat();
+}
+
+async function kelasPilihan() {
+  if (S.user.peran === 'admin') return (await api.list('kelas', { select: 'id,nama', order: 'nama' })).map(k => ({ id: k.id, nama: k.nama }));
+  return S.guru.wali.map(w => ({ id: w.kelas_id, nama: w.kelas }));
+}
+
+async function pageCatatan(v) {
+  if (!S.taAktif) { v.innerHTML = `<div class="card glass">${emptyState('Tahun ajaran belum aktif', 'Admin perlu mengaktifkan tahun ajaran terlebih dahulu.', 'calendar-x')}</div>`; return; }
+  const kelas = await kelasPilihan();
+  if (!kelas.length) { v.innerHTML = `<div class="card glass">${emptyState('Belum ada kelas', '', 'school')}</div>`; return; }
+  const pj = pilihJenis(() => muat());
+  v.innerHTML = `<div class="card glass">${pj.html}<div class="card-head"><h3>Pilih Kelas</h3></div>
+    <select class="input" id="sel-k">${kelas.map(k => `<option value="${k.id}" ${S.pilihKelas == k.id ? 'selected' : ''}>${esc(k.nama)}</option>`).join('')}</select></div><div id="cat-box" style="margin-top:16px"></div>`;
+  const muat = async () => {
+    const kid = Number($('#sel-k').value); S.pilihKelas = kid;
+    const box = $('#cat-box'); box.innerHTML = loading();
+    try {
+      const jenis = S.jenis, uts = jenis === 'UTS', genap = !uts && S.taAktif.semester === 'Genap';
+      const data = await api.rpc('catatan_kelas', { p_token: tok(), p_kelas_id: kid, p_jenis: jenis });
+      if (!data.length) { box.innerHTML = `<div class="card glass">${emptyState('Belum ada siswa di kelas ini', '', 'users')}</div>`; icons(); return; }
+      const ta = (k, val, ph = '') => `<textarea class="input input-sm" rows="3" data-k="${k}" placeholder="${esc(ph)}">${esc(val)}</textarea>`;
+      box.innerHTML = `<div class="card glass"><div class="card-head"><div><h3>${uts ? 'Ketidakhadiran (UTS)' : 'Kokurikuler, Ekstrakurikuler, Prestasi, Kehadiran & Catatan Wali'}</h3>
+          <div class="small muted">S = Sakit, I = Izin, A = Tanpa Keterangan (hari)${uts ? ', dihitung sampai tengah semester.' : '. Ekstrakurikuler & prestasi: satu per baris dengan format "Nama: Keterangan", contoh "Pramuka: B".'}</div></div><div class="spacer"></div>
+        <div class="toolbar">${uts ? '' : '<button class="btn btn-ghost" id="btn-sama"><i data-lucide="copy"></i> Samakan Kokurikuler</button>'}<button class="btn btn-primary" id="btn-sv"><i data-lucide="save"></i> Simpan</button></div></div>
+        <div class="table-wrap"><table class="tbl"><thead><tr><th class="num">No</th><th>Nama</th><th>S</th><th>I</th><th>A</th>${uts ? '' : '<th style="min-width:260px">Kokurikuler</th><th style="min-width:170px">Ekstrakurikuler</th><th style="min-width:170px">Prestasi</th><th style="min-width:220px">Catatan Wali Kelas</th>'}${genap ? '<th>Keputusan</th>' : ''}</tr></thead>
+        <tbody>${data.map((r, i) => `<tr data-id="${r.siswa_id}"><td class="num">${i + 1}</td><td><b>${esc(r.nama)}</b></td>
+          ${['sakit', 'izin', 'alpa'].map(k => `<td><input class="input input-sm" style="min-width:56px;width:60px" type="number" min="0" data-k="${k}" value="${r[k] ?? 0}"></td>`).join('')}
+          ${uts ? '' : `<td>${ta('kokurikuler', r.kokurikuler, 'Pada semester ini, ananda menunjukkan capaian ...')}</td><td>${ta('ekstrakurikuler', r.ekstrakurikuler, 'Pramuka: B')}</td>
+          <td>${ta('prestasi', r.prestasi, 'Juara 1 Lomba Desain: Tingkat Kabupaten')}</td><td>${ta('catatan_wali', r.catatan_wali)}</td>`}
+          ${genap ? `<td><select class="input input-sm" data-k="keputusan"><option value="">—</option>${['Naik Kelas', 'Tinggal Kelas', 'Lulus', 'Tidak Lulus'].map(o => `<option ${(r.keputusan === 'Tidak Naik Kelas' ? 'Tinggal Kelas' : r.keputusan) === o ? 'selected' : ''}>${o}</option>`).join('')}</select></td>` : ''}</tr>`).join('')}</tbody></table></div></div>`;
+      icons();
+      const bs = $('#btn-sama');
+      if (bs) bs.onclick = () => {
+        const isi = $$('[data-k="kokurikuler"]', box).map(x => x.value.trim()).find(Boolean);
+        if (!isi) return toast('Isi kokurikuler di salah satu siswa terlebih dahulu', 'err');
+        let c = 0; $$('[data-k="kokurikuler"]', box).forEach(x => { if (!x.value.trim()) { x.value = isi; c++; } });
+        toast(c + ' siswa diisi (yang kosong saja). Klik Simpan.', 'info');
+      };
+      $('#btn-sv').onclick = e => busy(e.currentTarget, async () => {
+        const rows = $$('tbody tr', box).map(tr => {
+          const g = k => { const el = $(`[data-k="${k}"]`, tr); return el ? el.value.trim() : ''; };
+          return { siswa_id: Number(tr.dataset.id), sakit: Number(g('sakit')) || 0, izin: Number(g('izin')) || 0, alpa: Number(g('alpa')) || 0, kokurikuler: g('kokurikuler') || null, ekstrakurikuler: g('ekstrakurikuler') || null, prestasi: g('prestasi') || null, catatan_wali: g('catatan_wali') || null, keputusan: g('keputusan') || null };
+        });
+        try { const c = await api.rpc('simpan_catatan', { p_token: tok(), p_kelas_id: kid, p_jenis: jenis, p_data: rows }); toast(c + ' data siswa tersimpan'); }
+        catch (er) { toast(errMsg(er), 'err'); }
+      });
+    } catch (e) { box.innerHTML = `<div class="card glass">${emptyState('Gagal memuat', errMsg(e), 'alert-triangle')}</div>`; icons(); }
+  };
+  pj.bind(v);
+  $('#sel-k').onchange = muat;
+  await muat();
+}
+
+// ---------- Rapor ----------
+const TINGKAT_KATA = { X: 'Sepuluh', XI: 'Sebelas', XII: 'Dua belas' };
+const TINGKAT_BERIKUT = { X: 'XI', XI: 'XII' };
+const angka = v => v === null || v === undefined || v === '' ? '' : Math.round(Number(v));
+const tglAngka = d => { if (!d) return '..........'; const [y, m, h] = String(d).split('-'); return `${h}-${m}-${y}`; };
+const pecahBaris = t => String(t || '').split(/\n/).map(x => x.trim()).filter(Boolean).map(x => { const i = x.indexOf(':'); return i > 0 ? [x.slice(0, i).trim(), x.slice(i + 1).trim()] : [x, '']; });
+
+// Susun mapel: urut per kelompok, sub-mapel (elemen) di bawah induknya
+function susunMapel(nilai) {
+  const byId = {};
+  nilai.forEach(n => { byId[n.id] = { ...n, sub: [] }; });
+  const atas = [];
+  Object.values(byId).forEach(n => { if (n.induk_id && byId[n.induk_id]) byId[n.induk_id].sub.push(n); else atas.push(n); });
+  atas.sort((a, b) => (KEL_URUT[a.kelompok] - KEL_URUT[b.kelompok]) || (a.urut - b.urut) || cmp(a.mapel, b.mapel));
+  atas.forEach(a => a.sub.sort((x, y) => (x.urut - y.urut) || cmp(x.mapel, y.mapel)));
+  return atas;
+}
+
+function latarRapor(sk) {
+  const t = String(sk.nama || 'SMK Mambaul Ulum').toUpperCase() + ' * ';
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="26"><text x="0" y="17" font-family="Arial" font-size="12" font-weight="700" fill="#000" fill-opacity="0.045">${esc(t)}</text></svg>`;
+  return `background-image:url('data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}')`;
+}
+
+function htmlRapor(d) { return d.jenis === 'UTS' ? htmlRaporUTS(d) : htmlRaporSemester(d); }
+
+function ttdRapor(d, tanggal, labelKepsek) {
+  const sk = d.sekolah || {};
+  return `<div class="ttd">
+      <div>Mengetahui,<br>Orang Tua / Wali,<div class="sp"></div><span class="garis"></span></div>
+      <div>${esc(sk.kota || '..........')}, ${tanggal}<br>Wali Kelas<div class="sp"></div><b>${esc(d.wali ? d.wali.nama : '.............................')}</b>${d.wali && d.wali.nip ? '<br>NIP. ' + esc(d.wali.nip) : ''}</div>
+      <div class="full">${labelKepsek}<div class="sp"></div><b>${esc(sk.kepala_sekolah || '.............................')}</b>${sk.nip_kepsek ? '<br>NIP. ' + esc(sk.nip_kepsek) : ''}</div>
+    </div>`;
+}
+
+function htmlRaporUTS(d) {
+  const sk = d.sekolah || {}, s = d.siswa, ta = d.tahun_ajaran, c = d.catatan || {};
+  const grpLbl = { 'Umum': ['A.', 'Mata Pelajaran Umum'], 'Kejuruan': ['B.', 'Mata Pelajaran Kejuruan'], 'Muatan Lokal': ['C.', 'Muatan Lokal'], 'Pilihan': ['D.', 'Mata Pelajaran Pilihan'] };
+  const sel = n => CPK.map(k => `<td class="ctr">${angka(rataCPk(n.formatif, k))}</td>`).join('') + `<td class="ctr">${angka(n.sts)}</td><td class="ctr"><b>${angka(nilaiUTS(n))}</b></td>`;
+  let body = '', last = null, no = 0;
+  for (const m of susunMapel(d.nilai)) {
+    if (m.kelompok !== last) { const g = grpLbl[m.kelompok] || ['', m.kelompok]; body += `<tr class="grp"><td class="ctr">${g[0]}</td><td colspan="6">${esc(g[1])}</td></tr>`; last = m.kelompok; no = 0; }
+    no++;
+    if (m.sub.length) {
+      body += `<tr><td class="ctr">${no}</td><td>${esc(m.mapel)}</td><td></td><td></td><td></td><td></td><td></td></tr>`;
+      m.sub.forEach((x, i) => { body += `<tr><td></td><td style="padding-left:18px">${no}.${i + 1}. ${esc(x.mapel)}</td>${sel(x)}</tr>`; });
+    } else body += `<tr><td class="ctr">${no}</td><td>${esc(m.mapel)}</td>${sel(m)}</tr>`;
+  }
+  const kv = (a, b) => `<tr><td style="width:110px">${a}</td><td>${b}</td></tr>`;
+  return `<div class="paper rapor" style="${latarRapor(sk)}"><img class="wm" src="${sk.logo || S.logo}" alt="">
+    <table class="uts-head"><tr><td class="l"><img src="${sk.logo || S.logo}" alt=""><div>${esc((sk.nama || 'SMK Mambaul Ulum').toUpperCase())}</div></td>
+      <td class="r"><div class="t">LAPORAN HASIL BELAJAR TENGAH SEMESTER</div><div class="s">TAHUN PELAJARAN ${esc(ta.nama)}</div></td></tr></table>
+    <table class="ident2"><tr><td><table>${kv('Nama', esc(s.nama))}${kv('NISN', esc(s.nisn || '-'))}${kv('No. Induk', esc(s.nis || '-'))}</table></td>
+      <td><table>${kv('Konsentrasi Keahlian', esc(d.jurusan ? d.jurusan.nama : '-'))}${kv('Kelas', esc(d.kelas ? d.kelas.tingkat : '-'))}${kv('Semester', esc(ta.semester))}</table></td></tr></table>
+    <table class="nil uts"><thead><tr><th rowspan="2" style="width:30px">NO</th><th rowspan="2">MATA PELAJARAN</th><th colspan="3">FORMATIF</th><th>SUMATIF</th><th rowspan="2" style="width:52px">NILAI AKHIR</th></tr>
+      <tr><th style="width:44px">CP1</th><th style="width:44px">CP2</th><th style="width:44px">CP3</th><th style="width:48px">STS</th></tr></thead>
+      <tbody>${body || '<tr><td colspan="7" class="ctr">Belum ada mata pelajaran</td></tr>'}</tbody></table>
+    <table class="nil hadir-uts"><tr><td style="width:28%" class="ctr"><b>KETIDAKHADIRAN</b></td><td>Sakit : ${c.sakit ?? 0} Hari</td><td>Izin : ${c.izin ?? 0} Hari</td><td>Tanpa Keterangan : ${c.alpa ?? 0} Hari</td></tr></table>
+    ${ttdRapor(d, tglAngka(ta.tanggal_uts), `Menyetujui,<br>Kepala ${esc(sk.nama || 'SMK Mambaul Ulum')}`)}
+  </div>`;
+}
+
+function htmlRaporSemester(d) {
+  const sk = d.sekolah || {}, s = d.siswa, ta = d.tahun_ajaran, c = d.catatan || {};
+  const genap = ta.semester === 'Genap', tingkat = d.kelas ? d.kelas.tingkat : '';
+  const kv = (a, b) => `<tr><td style="width:125px">${a}</td><td style="width:10px">:</td><td>${b}</td></tr>`;
+  const ident = `<table class="ident3"><tr><td><table>
+      ${kv('Nama Peserta Didik', `<b>${esc((s.nama || '').toUpperCase())}</b>`)}${kv('NISN / NIPD', esc((s.nisn || '-') + ' / ' + (s.nis || '-')))}${kv('Kelas', esc(tingkat || '-'))}
+      ${kv('Semester', genap ? '2 (dua) / Genap' : '1 (satu) / Ganjil')}${kv('Konsentrasi Keahlian', esc(d.jurusan ? d.jurusan.nama : '-'))}</table></td>
+    <td><table>${kv('Nama Sekolah', esc((sk.nama || '').toUpperCase()))}${kv('Alamat Sekolah', esc((sk.alamat || '-').toUpperCase()))}${kv('Fase', tingkat === 'X' ? 'E' : 'F')}${kv('Tahun Pelajaran', esc(ta.nama))}</table></td></tr></table>`;
+  const mapel = susunMapel(d.nilai);
+  // nilai rapor: isian guru, atau dihitung dari komponen; mapel induk = rata-rata sub-mapelnya
+  const nRapor = m => m.sub && m.sub.length ? (NUM(m.nilai_akhir) ?? rata(m.sub.map(nRapor))) : (bulat(nilaiRapor(m)) ?? NUM(m.nilai_akhir));
+  const nilaiRows = mapel.map((m, i) => `<tr><td class="ctr">${i + 1}</td><td>${esc(m.mapel)}</td><td class="ctr">${angka(nRapor(m)) || '-'}</td><td class="cap">${esc(m.capaian || '-')}</td></tr>`).join('');
+  const daftar = (judul, kolom, isi) => {
+    const r = pecahBaris(isi);
+    return `<table class="nil blok"><thead><tr><th style="width:34px">No</th><th style="width:45%">${judul}</th><th>${kolom}</th></tr></thead><tbody>
+      ${(r.length ? r : [['-', '-']]).map(([a, b], i) => `<tr><td class="ctr">${i + 1}</td><td class="ctr">${esc(a)}</td><td class="ctr">${esc(b || '-')}</td></tr>`).join('')}</tbody></table>`;
+  };
+  const kep = c.keputusan === 'Tidak Naik Kelas' ? 'Tinggal Kelas' : c.keputusan;
+  const coret = (teks, pilih) => kep && !pilih ? `<s>${teks}</s>` : teks;
+  const keputusan = !genap ? '' : `<table class="nil blok"><tr><td><b>KEPUTUSAN</b><br>Berdasarkan hasil yang dicapai pada semester 1 dan 2, peserta didik dinyatakan:<br>
+      ${tingkat === 'XII'
+        ? `${coret('Lulus', kep === 'Lulus')} / ${coret('Tidak Lulus', kep === 'Tidak Lulus')}*)`
+        : `${coret('Naik', kep === 'Naik Kelas')} / ${coret('Tinggal', kep === 'Tinggal Kelas')}*) ke kelas ${esc(TINGKAT_BERIKUT[tingkat] || '....')} ( ${esc(TINGKAT_KATA[TINGKAT_BERIKUT[tingkat]] || '....')} )`}<br><i>*) coret yang tidak perlu</i></td></tr></table>`;
+  return `<div class="paper rapor" style="${latarRapor(sk)}"><img class="wm" src="${sk.logo || S.logo}" alt="">
+    <table class="halaman"><thead><tr><td>${ident}<div class="garis-id"></div></td></tr></thead><tbody><tr><td>
+      <table class="nil"><thead><tr><th colspan="4" class="judul">LAPORAN HASIL BELAJAR</th></tr>
+        <tr><th style="width:34px">No</th><th style="width:30%">Mata Pelajaran</th><th style="width:62px">Nilai Akhir</th><th>Capaian Pembelajaran</th></tr></thead>
+        <tbody>${nilaiRows || '<tr><td colspan="4" class="ctr">Belum ada mata pelajaran</td></tr>'}</tbody></table>
+      <table class="nil blok"><thead><tr><th>Kokurikuler</th></tr></thead><tbody><tr><td style="height:60px">${esc(c.kokurikuler || '-')}</td></tr></tbody></table>
+      ${daftar('Kegiatan Ekstrakurikuler', 'Keterangan', c.ekstrakurikuler)}
+      ${daftar('Prestasi', 'Keterangan', c.prestasi)}
+      <div class="dua blok"><table class="nil"><thead><tr><th colspan="3">Ketidakhadiran</th></tr></thead><tbody>
+          <tr><td>Sakit</td><td class="ctr" style="width:40px">${c.sakit ?? 0}</td><td style="width:40px">hari</td></tr>
+          <tr><td>Izin</td><td class="ctr">${c.izin ?? 0}</td><td>hari</td></tr>
+          <tr><td>Tanpa Keterangan</td><td class="ctr">${c.alpa ?? 0}</td><td>hari</td></tr></tbody></table>
+        <table class="nil"><thead><tr><th>Catatan Wali Kelas</th></tr></thead><tbody><tr><td style="height:66px">${esc(c.catatan_wali || '-')}</td></tr></tbody></table></div>
+      ${genap ? keputusan : '<table class="nil blok"><thead><tr><th>Tanggapan Orang Tua / Wali Murid</th></tr></thead><tbody><tr><td style="height:46px"></td></tr></tbody></table>'}
+      ${ttdRapor(d, esc(tglIndo(ta.tanggal_rapor)), 'Mengetahui,<br>Kepala Sekolah')}
+    </td></tr></tbody></table>
+  </div>`;
+}
+
+function cetak(html) { $('#print-area').innerHTML = html; setTimeout(() => window.print(), 150); }
+
+async function lihatRapor(siswaId, taId, jenis) {
+  const m = modal({ title: 'Pratinjau Rapor', wide: true, body: '<div style="display:grid;place-items:center;padding:40px"><span class="spin dark"></span></div>',
+    foot: `<button class="btn btn-ghost" data-x>Tutup</button><button class="btn btn-primary" data-print disabled><i data-lucide="printer"></i> Cetak / Simpan PDF</button>` });
+  try {
+    const d = await api.rpc('rapor_siswa', { p_token: tok(), p_siswa_id: siswaId, p_ta_id: taId || null, p_jenis: jenis });
+    const html = htmlRapor(d);
+    $('.modal-body', m.el).innerHTML = `<div style="background:#E2E8F0;padding:14px;border-radius:12px">${html}</div>`;
+    const b = $('[data-print]', m.el); b.disabled = false; b.onclick = () => cetak(html);
+  } catch (e) { $('.modal-body', m.el).innerHTML = emptyState('Gagal memuat rapor', errMsg(e), 'alert-triangle'); icons(); }
+}
+
+async function pageRapor(v) {
+  const [kelas, taList] = await Promise.all([kelasPilihan(), api.list('tahun_ajaran', { order: 'id', asc: false })]);
+  if (!kelas.length) { v.innerHTML = `<div class="card glass">${emptyState('Belum ada kelas', '', 'school')}</div>`; return; }
+  if (!taList.length) { v.innerHTML = `<div class="card glass">${emptyState('Belum ada tahun ajaran', '', 'calendar-x')}</div>`; return; }
+  const taDef = (S.taAktif && S.taAktif.id) || taList[0].id;
+  const pj = pilihJenis(() => muat());
+  v.innerHTML = `<div class="card glass">${pj.html}<div class="form-grid">
+      <div class="field"><label>Kelas</label><select class="input" id="sel-k">${kelas.map(k => `<option value="${k.id}" ${S.pilihKelas == k.id ? 'selected' : ''}>${esc(k.nama)}</option>`).join('')}</select></div>
+      <div class="field"><label>Tahun Ajaran / Semester</label><select class="input" id="sel-ta">${taList.map(t => `<option value="${t.id}" ${t.id === taDef ? 'selected' : ''}>${esc(t.nama)} — ${esc(t.semester)}${t.aktif ? ' (aktif)' : ''}</option>`).join('')}</select></div>
+    </div></div><div id="rap-box" style="margin-top:16px"></div>`;
+  const muat = async () => {
+    const kid = Number($('#sel-k').value); S.pilihKelas = kid;
+    const box = $('#rap-box'); box.innerHTML = loading();
+    try {
+      const siswa = S.user.peran === 'admin'
+        ? (await api.list('siswa', { select: 'id,nisn,nama,kelas_id,aktif', eq: { kelas_id: kid, aktif: true }, order: 'nama' })).map(s => ({ siswa_id: s.id, nisn: s.nisn, nama: s.nama }))
+        : await api.rpc('catatan_kelas', { p_token: tok(), p_kelas_id: kid, p_jenis: S.jenis });
+      if (!siswa.length) { box.innerHTML = `<div class="card glass">${emptyState('Belum ada siswa di kelas ini', '', 'users')}</div>`; icons(); return; }
+      box.innerHTML = `<div class="card glass"><div class="card-head"><h3>Daftar Siswa</h3><span class="badge ${S.jenis === 'UTS' ? 'b-amber' : 'b-green'}">Rapor ${jenisLbl(S.jenis)}</span><span class="badge b-gray">${siswa.length} siswa</span><div class="spacer"></div>
+        <button class="btn btn-accent" id="btn-all"><i data-lucide="printer"></i> Cetak Semua</button></div>
+        <div class="table-wrap"><table class="tbl"><thead><tr><th class="num">No</th><th>NISN</th><th>Nama</th><th class="act">Aksi</th></tr></thead>
+        <tbody>${siswa.map((s, i) => `<tr><td class="num">${i + 1}</td><td>${esc(s.nisn)}</td><td><b>${esc(s.nama)}</b></td><td class="act"><button class="btn btn-ghost btn-sm" data-r="${s.siswa_id}"><i data-lucide="eye"></i> Lihat & Cetak</button></td></tr>`).join('')}</tbody></table></div></div>`;
+      icons();
+      $$('[data-r]', box).forEach(b => b.onclick = () => lihatRapor(Number(b.dataset.r), Number($('#sel-ta').value), S.jenis));
+      $('#btn-all').onclick = e => busy(e.currentTarget, async () => {
+        try {
+          const taId = Number($('#sel-ta').value), parts = [];
+          for (const s of siswa) parts.push(htmlRapor(await api.rpc('rapor_siswa', { p_token: tok(), p_siswa_id: s.siswa_id, p_ta_id: taId, p_jenis: S.jenis })));
+          cetak(parts.join(''));
+        } catch (er) { toast(errMsg(er), 'err'); }
+      });
+    } catch (e) { box.innerHTML = `<div class="card glass">${emptyState('Gagal memuat', errMsg(e), 'alert-triangle')}</div>`; icons(); }
+  };
+  pj.bind(v);
+  $('#sel-k').onchange = muat;
+  await muat();
+}
+
+async function pageAkun(v) {
+  const info = S.user.peran === 'guru' ? `Username: <b>${esc(S.guru.guru.username)}</b>` : `Email: <b>${esc(S.user.email)}</b>`;
+  v.innerHTML = `<div class="card glass" style="max-width:520px"><div class="card-head"><div class="avatar" style="width:48px;height:48px;font-size:16px">${esc(inisial(S.user.nama))}</div><div><h3>${esc(S.user.nama)}</h3><div class="small muted">${info}</div></div></div>
+    <form id="f-pw" class="stack"><h4>Ganti Password</h4>
+      <div class="field"><label>Password Lama</label><input class="input" type="password" name="a" required autocomplete="current-password"></div>
+      <div class="field"><label>Password Baru (min. 6 karakter)</label><input class="input" type="password" name="b" minlength="6" required autocomplete="new-password"></div>
+      <div class="field"><label>Ulangi Password Baru</label><input class="input" type="password" name="c" minlength="6" required autocomplete="new-password"></div>
+      <button class="btn btn-primary" type="submit"><i data-lucide="key-round"></i> Simpan Password</button></form>
+    <div style="height:14px"></div><button class="btn btn-ghost btn-block" id="btn-lo"><i data-lucide="log-out"></i> Keluar</button></div>`;
+  $('#btn-lo').onclick = logout;
+  $('#f-pw').onsubmit = e => {
+    e.preventDefault(); const f = e.target;
+    if (f.b.value !== f.c.value) return toast('Konfirmasi password tidak sama', 'err');
+    busy($('button[type=submit]', f), async () => {
+      try { await api.rpc('ganti_password', { p_token: tok(), p_lama: f.a.value, p_baru: f.b.value }); toast('Password berhasil diganti'); f.reset(); }
+      catch (er) { toast(errMsg(er), 'err'); }
+    });
+  };
+}
+
+async function pagePengaturan(v) {
+  const sk = (await api.list('sekolah'))[0] || { id: 1 };
+  const F = [['nama', 'Nama Sekolah', 1], ['npsn', 'NPSN'], ['alamat', 'Alamat', 1], ['kota', 'Kota/Kabupaten (untuk tanda tangan)'], ['telepon', 'Telepon'], ['email', 'Email'], ['kepala_sekolah', 'Nama Kepala Sekolah'], ['nip_kepsek', 'NIP Kepala Sekolah']];
+  v.innerHTML = `<div class="card glass"><div class="card-head"><h3>Logo Sekolah</h3></div>
+      <div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">
+        <img id="logo-prev" src="${esc(sk.logo || LOGO_DEFAULT)}" alt="Logo" style="width:96px;height:96px;object-fit:contain;border-radius:14px;background:#fff;border:1px solid var(--border);padding:6px">
+        <div class="stack" style="gap:8px;flex:1;min-width:200px">
+          <div class="small muted">Tampil di halaman login, menu, dan kop rapor. Gunakan PNG/JPG persegi (latar transparan lebih bagus). Otomatis diperkecil.</div>
+          <div class="toolbar"><label class="btn btn-primary" style="margin:0"><i data-lucide="upload"></i> Unggah Logo<input type="file" accept="image/png,image/jpeg,image/webp" id="logo-file" hidden></label>
+            <button class="btn btn-ghost" id="logo-reset"><i data-lucide="rotate-ccw"></i> Pakai Logo Bawaan</button></div>
+        </div></div></div>
+    <div class="card glass"><div class="card-head"><h3>Identitas Sekolah</h3><div class="spacer"></div><button class="btn btn-primary" id="btn-sk"><i data-lucide="save"></i> Simpan</button></div>
+      <form class="form-grid" id="f-sk">${F.map(([k, l, full]) => `<div class="field ${full ? 'full' : ''}"><label>${l}</label><input class="input" name="${k}" value="${esc(sk[k])}"></div>`).join('')}</form></div>
+    <div id="ta-host" style="margin-top:16px"></div>`;
+  const simpanLogo = async logo => {
+    try { await api.update('sekolah', 1, { logo }); terapkanLogo(logo); toast('Logo sekolah diperbarui'); renderShell(); }
+    catch (er) { toast(errMsg(er), 'err'); }
+  };
+  $('#logo-file').onchange = async e => {
+    const f = e.target.files[0]; if (!f) return;
+    try { await simpanLogo(await kecilkanGambar(f)); } catch (er) { toast(errMsg(er), 'err'); }
+  };
+  $('#logo-reset').onclick = e => busy(e.currentTarget, () => simpanLogo(null));
+  $('#btn-sk').onclick = e => busy(e.currentTarget, async () => {
+    const f = $('#f-sk'), d = {};
+    F.forEach(([k]) => d[k] = f.elements[k].value.trim() || null);
+    if (!d.nama) return toast('Nama sekolah wajib diisi', 'err');
+    try { await api.update('sekolah', 1, d); toast('Identitas sekolah disimpan'); } catch (er) { toast(errMsg(er), 'err'); }
+  });
+  await pageMaster('tahun_ajaran', $('#ta-host'));
+}
+
+const PAGES = {
+  beranda: v => S.user.peran === 'admin' ? pageBerandaAdmin(v) : pageBerandaGuru(v),
+  siswa: v => pageMaster('siswa', v), guru: v => pageMaster('guru', v), kelas: v => pageMaster('kelas', v),
+  mapel: v => pageMaster('mapel', v), jurusan: v => pageMaster('jurusan', v), mengajar: v => pageMaster('mengajar', v),
+  nilai: pageNilai, catatan: pageCatatan, rapor: pageRapor, akun: pageAkun, pengaturan: pagePengaturan
+};
+
+// ====================================================================
+//  INISIALISASI
+// ====================================================================
+async function init() {
+  terapkanLogo(null);
+  if (IS_PREVIEW) await muatLogo();
+  if (!IS_PREVIEW) {
+    if (!/^https?:\/\//.test(SUPABASE_URL)) {
+      $('#app').innerHTML = `<div class="login-wrap"><div class="login-card glass">${emptyState('Konfigurasi belum lengkap', 'Isi SUPABASE_URL dan SUPABASE_ANON_KEY di index.html.', 'settings')}</div></div>`;
+      icons(); return;
+    }
+    const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm');
+    sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    await muatLogo();
+    try {
+      const u = await api.sessionAdmin();
+      if (u) { S.user = { peran: 'admin', nama: 'Administrator', email: u.email }; await masuk(); return; }
+      const sesi = lsGet();
+      if (sesi && sesi.token && sesi.peran === 'guru') { S.user = sesi; await masuk(); return; }
+      lsSet(null);
+    } catch (e) { lsSet(null); S.user = null; }
+  }
+  renderLogin();
+}
+
+// PWA: daftarkan service worker (hanya bila di-host via https / localhost)
+if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => { /* PWA opsional */ }));
+}
+
+init();
+</script>
+</body>
+</html>

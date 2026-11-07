@@ -1,0 +1,25 @@
+{
+  "name": "e-Rapor SMK Mambaul Ulum",
+  "short_name": "e-Rapor",
+  "description": "Aplikasi rapor digital SMK Mambaul Ulum",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#F8FAFC",
+  "theme_color": "#047857",
+  "lang": "id",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
