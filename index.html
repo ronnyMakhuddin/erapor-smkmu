@@ -797,7 +797,7 @@ const MASTER = {
       { k: 'nama', l: 'Nama Mata Pelajaran / Elemen', req: 1, full: 1 }, { k: 'kode', l: 'Kode Singkat' },
       { k: 'kelompok', l: 'Kelompok', type: 'select', req: 1, opts: ['Umum', 'Kejuruan', 'Muatan Lokal', 'Pilihan'].map(x => [x, x]) },
       { k: 'urut', l: 'Urutan di Rapor', type: 'number', def: 1 },
-      { k: 'induk_id', l: 'Sub dari Mapel (opsional)', type: 'ref', ref: 'mapel', hint: 'Isi untuk elemen yang tampil sebagai 3.1, 3.2, dst. di rapor UTS (mis. di bawah Desain Komunikasi Visual). Di rapor semester hanya mapel induk yang tampil.' }
+      { k: 'induk_id', l: 'Sub dari Mapel (opsional)', type: 'ref', ref: 'mapel', saring: (o, row) => !o.induk_id && (!row || o.id !== row.id), hint: 'Isi untuk elemen yang tampil sebagai 3.1, 3.2, dst. di rapor UTS (mis. di bawah Desain Komunikasi Visual). Di rapor semester hanya mapel induk yang tampil.' }
     ]
   },
   jurusan: {
@@ -866,6 +866,7 @@ async function pageMaster(key, host) {
     icons();
   };
   const ulang = async () => {
+    if (cfg.refs && cfg.refs.length) Object.assign(R, await muatRefs(cfg.refs)); // agar data baru (mis. mapel induk) langsung muncul di pilihan
     rows = await api.list(key, { select: cfg.select, order: cfg.order, asc: cfg.asc }); if (cfg.sort) rows.sort((a, b) => cfg.sort(a, b, R));
     if (key === 'tahun_ajaran') { const akt = rows.find(r => r.aktif) || null; const ganti = JSON.stringify(akt) !== JSON.stringify(S.taAktif); S.taAktif = akt; if (ganti) return renderShell(); }
     tampil();
@@ -883,7 +884,7 @@ function formMaster(key, row, R, onDone) {
   const input = f => {
     const v = val(f), req = f.req ? 'required' : '';
     if (f.type === 'select') return `<select class="input" name="${f.k}" ${req}><option value="">— Pilih —</option>${f.opts.map(([a, b]) => `<option value="${esc(a)}" ${v == a ? 'selected' : ''}>${esc(b)}</option>`).join('')}</select>`;
-    if (f.type === 'ref') return `<select class="input" name="${f.k}" ${req}><option value="">— Pilih —</option>${(R[f.ref] || []).map(o => `<option value="${o.id}" ${v == o.id ? 'selected' : ''}>${esc(o.kode && f.ref === 'jurusan' ? o.kode + ' — ' + o.nama : o.nama)}</option>`).join('')}</select>`;
+    if (f.type === 'ref') return `<select class="input" name="${f.k}" ${req}><option value="">— Pilih —</option>${(R[f.ref] || []).filter(o => !f.saring || f.saring(o, row)).map(o => `<option value="${o.id}" ${v == o.id ? 'selected' : ''}>${esc(o.kode && f.ref === 'jurusan' ? o.kode + ' — ' + o.nama : o.nama)}</option>`).join('')}</select>`;
     if (f.type === 'textarea') return `<textarea class="input" name="${f.k}" ${req}>${esc(v)}</textarea>`;
     if (f.type === 'check') return `<label class="check"><input type="checkbox" name="${f.k}" ${v ? 'checked' : ''}> ${esc(f.l)}</label>`;
     return `<input class="input" type="${f.type || 'text'}" name="${f.k}" value="${esc(v)}" ${req} placeholder="${esc(f.ph || '')}" ${f.type === 'password' ? 'autocomplete="new-password"' : ''}>`;
