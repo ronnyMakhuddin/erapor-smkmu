@@ -12,7 +12,7 @@ Aplikasi rapor digital (Kurikulum Merdeka) untuk SMK Mambaul Ulum. Frontend stat
 
 Siswa tidak memiliki akun; rapor dicetak/di-PDF-kan oleh admin atau wali kelas.
 
-**Input nilai cukup sekali** per mapel (menu Input Nilai), mengikuti form nilai Excel sekolah: CP1–CP3 (masing-masing S1–S3), N. STS, N. SAS. Rata-rata CP dan **Nilai Rapor = rata-rata semua nilai (S1–S3 CP1–CP3, STS, SAS)** dihitung otomatis. Form Excel guru (sheet CP 1, CP 2, CP 3, NILAI UJIAN) bisa langsung diimpor lewat tombol **Impor Form Excel**; siswa dicocokkan berdasarkan nama. Deskripsi CP bisa diketik atau dipilih lewat tombol **Pilih dari Daftar CP** (daftar resmi CP SMK/MAK Keputusan Kepala BSKAP No. 046/H/KR/2025, file `cp-smk.json`: 185 mapel kejuruan/umum SMK Fase E & F, 944 elemen; termasuk sub-mapel, yang otomatis mencari CP di mapel induknya), lalu dipakai untuk **Capaian Otomatis**.
+**Input nilai cukup sekali** per mapel (menu Input Nilai), mengikuti form nilai Excel sekolah: CP1–CP3 (masing-masing S1–S3), N. STS, N. SAS. Rata-rata CP dan **Nilai Rapor = rata-rata semua nilai (S1–S3 CP1–CP3, STS, SAS)** dihitung otomatis. Form Excel guru (sheet CP 1, CP 2, CP 3, NILAI UJIAN) bisa langsung diimpor lewat tombol **Impor Form Excel**; siswa dicocokkan berdasarkan nama. Deskripsi CP bisa diketik atau dipilih lewat tombol **Pilih dari Daftar CP** (CP SMK/MAK Keputusan Kepala BSKAP No. 046/H/KR/2025: Sejarah, Projek IPAS, Koding & KA, KIK, PKL, serta kejuruan Desain Komunikasi Visual Fase E & F; sub-mapel otomatis mencari CP di mapel induknya), lalu dipakai untuk **Capaian Otomatis**.
 
 Saat **Cetak Rapor**, pilih *Tengah Semester (UTS)* atau *Akhir Semester*; keduanya memakai data nilai yang sama. Kehadiran & catatan diisi terpisah untuk tengah dan akhir semester.
 
@@ -25,7 +25,6 @@ Tampilan: glassmorphism putih-hijau, sidebar di laptop, menu bawah melayang di H
 
 ```
 index.html              ← seluruh aplikasi (UI + logika)
-cp-smk.json             ← daftar Capaian Pembelajaran SMK/MAK (BSKAP 046/H/KR/2025)
 supabase/schema.sql     ← tabel, fungsi RPC, RLS (jalankan di Supabase)
 manifest.webmanifest    ← PWA
 sw.js                   ← service worker PWA
