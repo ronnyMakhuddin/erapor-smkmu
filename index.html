@@ -1046,7 +1046,7 @@ async function pilihDaftarCP(o, onPakai) {
   const W = m.el, urut = [];
   const isiBlok = () => {
     const q = $('[data-cari]', W).value.trim().toLowerCase(), f = $('[data-fase]', W).value;
-    let daftar = data.map((d, i) => ({ d, i })).filter(x => !f || x.d.fase === f);
+    let daftar = data.map((d, i) => ({ d, i })).filter(x => !f || x.d.fase === f || !data.some(y => y.mapel === x.d.mapel && y.fase === f));
     if (q) daftar = daftar.map(x => ({ ...x, s: _cocokCP(q, x.d) + (x.d.mapel.toLowerCase().includes(q) ? 1 : 0) })).filter(x => x.s > 0).sort((a, b) => b.s - a.s);
     else daftar.sort((a, b) => ((skor[b.i] > 0.05 ? skor[b.i] : 0) - (skor[a.i] > 0.05 ? skor[a.i] : 0)) || a.d.mapel.localeCompare(b.d.mapel));
     if (!daftar.some(x => x.i === pilihBlok)) pilihBlok = daftar.length ? daftar[0].i : -1;
