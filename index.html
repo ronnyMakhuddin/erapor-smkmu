@@ -1017,6 +1017,70 @@ const semuaS = f => CPK.flatMap(k => (f && f[k]) || []);
 const nilaiUTS = n => rata([...semuaS(n.formatif), n.sts]);                // rapor tengah semester = rata-rata semua S + STS
 const nilaiRapor = n => rata([...semuaS(n.formatif), n.sts, n.sas]);       // N. RAPOR = rata-rata semua nilai (S CP1-CP3, STS, SAS)
 
+// ===== Daftar CP resmi SMK/MAK (Keputusan Kepala BSKAP No. 046/H/KR/2025) dari file cp-smk.json =====
+let _katalogCP = null;
+function katalogCP() {
+  if (!_katalogCP) _katalogCP = fetch('cp-smk.json').then(r => { if (!r.ok) throw new Error('File daftar CP (cp-smk.json) tidak ditemukan'); return r.json(); })
+    .catch(e => { _katalogCP = null; throw e; });
+  return _katalogCP;
+}
+const _kataCP = t => String(t || '').toLowerCase().replace(/dasar-dasar|smk\/mak/g, ' ').replace(/\bdesign\b/g, 'desain').split(/[^a-z0-9]+/).filter(w => w.length > 2 && !['dan', 'serta', 'untuk', 'pada', 'yang', 'dalam', 'menerapkan', 'memahami', 'menganalisis', 'membuat', 'melakukan', 'mengelola'].includes(w));
+const _skorCP = (a, b) => { const A = _kataCP(a), B = new Set(_kataCP(b)); if (!A.length || !B.size) return 0; return A.filter(w => B.has(w)).length / Math.max(A.length, B.size); };
+async function pilihDaftarCP(o, onPakai) {
+  let data;
+  try { data = await katalogCP(); } catch (e) { return toast(errMsg(e), 'err'); }
+  const fase = /^X\s/i.test(o.kelas) ? 'E' : 'F';
+  const acuan = o.induk || o.mapel;                        // sub-mapel: cari CP di mapel induknya (mis. Desain Komunikasi Visual)
+  const skor = {}; data.forEach((d, i) => { skor[i] = _skorCP(acuan, d.mapel) + (_skorCP(acuan, d.mapel) > 0 && d.fase === fase ? 0.01 : 0); });
+  const terbaik = Object.keys(skor).map(Number).sort((a, b) => skor[b] - skor[a])[0];
+  let pilihBlok = skor[terbaik] > 0.05 ? terbaik : -1;
+  const m = modal({ title: 'Pilih dari Daftar CP', wide: true,
+    body: `<div class="small muted" style="margin-bottom:10px">Sumber: CP SMK/MAK (Keputusan Kepala BSKAP No. 046/H/KR/2025). Centang maksimal 3 elemen; urutan centang menjadi CP 1, CP 2, CP 3. Teks masih bisa diedit setelah dipakai.</div>
+      <div style="display:grid;grid-template-columns:1fr 150px;gap:8px"><input class="input" data-cari placeholder="Cari mapel, mis. desain komunikasi visual"><select class="input" data-fase><option value="">Semua fase</option><option value="E" ${fase === 'E' ? 'selected' : ''}>Fase E (kelas X)</option><option value="F" ${fase === 'F' ? 'selected' : ''}>Fase F (XI–XII)</option></select></div>
+      <select class="input" data-blok style="margin-top:8px"></select>
+      <div data-el class="stack" style="margin-top:12px;gap:8px"></div>`,
+    foot: `<span class="small muted" data-info style="margin-right:auto"></span><button class="btn btn-ghost" data-x>Batal</button><button class="btn btn-primary" data-pakai><i data-lucide="check"></i> Pakai</button>` });
+  const W = m.el, urut = [];
+  const isiBlok = () => {
+    const q = $('[data-cari]', W).value.trim().toLowerCase(), f = $('[data-fase]', W).value;
+    let daftar = data.map((d, i) => ({ d, i })).filter(x => !f || x.d.fase === f);
+    if (q) daftar = daftar.map(x => ({ ...x, s: _skorCP(q, x.d.mapel) + (x.d.mapel.toLowerCase().includes(q) ? 1 : 0) })).filter(x => x.s > 0).sort((a, b) => b.s - a.s);
+    else daftar.sort((a, b) => ((skor[b.i] > 0.05 ? skor[b.i] : 0) - (skor[a.i] > 0.05 ? skor[a.i] : 0)) || a.d.mapel.localeCompare(b.d.mapel));
+    if (!daftar.some(x => x.i === pilihBlok)) pilihBlok = daftar.length ? daftar[0].i : -1;
+    $('[data-blok]', W).innerHTML = daftar.length ? daftar.map(x => `<option value="${x.i}" ${x.i === pilihBlok ? 'selected' : ''}>${esc(x.d.mapel)} — Fase ${x.d.fase}</option>`).join('') : '<option value="-1">Tidak ditemukan</option>';
+    isiElemen();
+  };
+  const isiElemen = () => {
+    pilihBlok = Number($('[data-blok]', W).value); urut.length = 0;
+    const d = data[pilihBlok];
+    $('[data-el]', W).innerHTML = d ? d.elemen.map((e, j) => `<label style="display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:12px;cursor:pointer;border:1px solid var(--border-strong);background:rgba(255,255,255,.6)">
+        <input type="checkbox" data-j="${j}" style="margin-top:4px;flex:none"><div><b>${j + 1}. ${esc(e.elemen)}</b> <span class="badge b-green" data-no style="display:none"></span><div class="small" style="margin-top:3px">${esc(e.cp)}</div></div></label>`).join('') : emptyState('Tidak ada data', 'Coba kata kunci lain.', 'search');
+    if (d && o.induk) {                                    // sub-mapel: centang otomatis elemen yang namanya paling mirip
+      const best = d.elemen.map((e, j) => ({ j, s: _skorCP(o.mapel, e.elemen) })).sort((a, b) => b.s - a.s)[0];
+      if (best && best.s >= 0.3) { $(`[data-j="${best.j}"]`, W).checked = true; urut.push(best.j); }
+    }
+    $$('[data-j]', W).forEach(cb => cb.onchange = () => {
+      const j = Number(cb.dataset.j);
+      if (cb.checked) { if (urut.length >= 3) { cb.checked = false; return toast('Maksimal 3 elemen (CP 1–3)', 'info'); } urut.push(j); }
+      else urut.splice(urut.indexOf(j), 1);
+      tandai();
+    });
+    tandai(); icons();
+  };
+  const tandai = () => {
+    $$('[data-j]', W).forEach(cb => { const k = urut.indexOf(Number(cb.dataset.j)), b = cb.closest('label').querySelector('[data-no]'); b.style.display = k < 0 ? 'none' : ''; b.textContent = 'CP ' + (k + 1); });
+    $('[data-info]', W).textContent = urut.length ? urut.length + ' elemen dipilih' : '';
+  };
+  $('[data-cari]', W).oninput = isiBlok; $('[data-fase]', W).onchange = isiBlok; $('[data-blok]', W).onchange = isiElemen;
+  $('[data-pakai]', W).onclick = () => {
+    if (!urut.length) return toast('Centang minimal satu elemen', 'info');
+    const d = data[pilihBlok];
+    onPakai(urut.map(j => d.elemen[j].cp)); m.close();
+    toast(urut.length + ' CP terisi. Klik Simpan Nilai untuk menyimpan.', 'ok');
+  };
+  isiBlok();
+}
+
 function capaianDariCP(n, cps, mapel) {
   if (n === null || n === '' || isNaN(n)) return '';
   n = Number(n);
@@ -1102,13 +1166,14 @@ async function pageNilai(v) {
             <td data-p>${predikat(bulat(nilaiRapor(r)))}</td>${mode === 'penuh' ? `<td><textarea class="input input-sm" rows="2" data-c>${esc(r.capaian)}</textarea></td>` : ''}</tr>`
         : `<tr data-id="${r.siswa_id}"><td class="num">${i + 1}</td><td><b>${esc(r.nama)}</b><div class="small muted">${esc(r.nisn)}</div></td>
             <td>${inp('data-n placeholder="otomatis"', r.nilai_akhir, 90)}</td><td data-p>${predikat(NUM(r.nilai_akhir))}</td><td><textarea class="input input-sm" rows="2" data-c>${esc(r.capaian)}</textarea></td></tr>`;
-      box.innerHTML = `${mode === 'penuh' ? `<div class="card glass"><div class="card-head"><h3>Capaian Pembelajaran (CP)</h3><div class="spacer"></div><span class="small muted">Dipakai untuk menyusun capaian otomatis</span></div>
-          <div class="stack" style="gap:10px">${CPK.map((k, i) => `<div class="field"><label>CP ${i + 1}</label><input class="input" data-cpdesk="${k}" value="${esc(cp[k])}" placeholder="contoh: Menerapkan strategi dekomposisi, pengenalan pola, abstraksi, dan algoritma ..."></div>`).join('')}</div></div>` : ''}
+      box.innerHTML = `${true ? `<div class="card glass"><div class="card-head"><div><h3>Capaian Pembelajaran (CP)</h3><div class="small muted">${mode === 'sub' ? 'CP untuk elemen/sub-mapel ini' : 'Dipakai untuk menyusun capaian otomatis'}</div></div><div class="spacer"></div><button class="btn btn-ghost" id="btn-pilih-cp"><i data-lucide="list-checks"></i> Pilih dari Daftar CP</button></div>
+          <div class="stack" style="gap:10px">${CPK.map((k, i) => `<div class="field"><label>CP ${i + 1}</label><textarea class="input" rows="2" data-cpdesk="${k}" placeholder="Ketik atau klik Pilih dari Daftar CP">${esc(cp[k])}</textarea></div>`).join('')}</div></div>` : ''}
         <div class="card glass"><div class="card-head"><div><h3>${o.induk ? esc(o.induk) + ' › ' : ''}${esc(o.mapel)}</h3><div class="small muted">${esc(o.kelas)} · ${data.length} siswa · Nilai 0–100${mode === 'induk' ? ' · Mapel ini punya sub-mapel: Nilai Rapor dikosongkan = rata-rata nilai sub-mapel' : ' · Nilai Rapor otomatis = rata-rata semua nilai (S1–S3 CP1–CP3, STS, SAS)'}</div></div><div class="spacer"></div>
           <div class="toolbar">${komponen ? '<label class="btn btn-ghost" style="margin:0"><i data-lucide="file-spreadsheet"></i> Impor Form Excel<input type="file" accept=".xlsx,.xls" id="imp-xls" hidden></label>' : ''}
             ${mode !== 'sub' ? '<button class="btn btn-ghost" id="btn-auto"><i data-lucide="sparkles"></i> Capaian Otomatis</button>' : ''}<button class="btn btn-primary" id="btn-sv"><i data-lucide="save"></i> Simpan Nilai</button></div></div>
           <div class="table-wrap"><table class="tbl nilai-tbl"><thead>${head}</thead><tbody>${data.map(baris).join('')}</tbody></table></div></div>`;
       icons();
+      $('#btn-pilih-cp').onclick = () => pilihDaftarCP(o, isi => CPK.forEach((k, i) => { const el = $(`[data-cpdesk="${k}"]`, box); if (el) el.value = isi[i] ?? ''; }));
       const nilaiBaris = tr => ({
         formatif: komponen ? Object.fromEntries(CPK.map(k => [k, [0, 1, 2].map(x => NUM($(`[data-f="${k}"][data-x="${x}"]`, tr).value))])) : null,
         sts: komponen ? NUM($('[data-sts]', tr).value) : null, sas: komponen ? NUM($('[data-sas]', tr).value) : null
