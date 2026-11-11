@@ -216,6 +216,33 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .paper .ttd .sp{height:58px}
 .paper .ttd b{text-decoration:underline}
 .paper .ttd .garis{display:inline-block;width:170px;border-bottom:1px solid #000}
+.paper.sampul{padding:22px}
+.paper.sampul .bingkai{border:2px solid #000;min-height:980px;display:flex;flex-direction:column;align-items:center;text-align:center;padding:60px 40px 40px}
+.paper.sampul .logo{width:150px;height:150px;object-fit:contain}
+.paper.sampul .judul{font-size:21px;font-weight:800;line-height:1.5;margin:70px 0 80px}
+.paper.sampul .kotak-lbl{font-weight:700;font-size:13px;margin-top:22px}
+.paper.sampul .kotak{border:1.5px solid #000;width:62%;padding:7px;font-size:13.5px;margin-top:4px}
+.paper.sampul .kaki{margin-top:auto;font-size:12px;font-weight:700;line-height:1.55}
+.paper.sampul .kaki .besar{font-size:17px;font-weight:800}
+.paper.idsek{text-align:center;padding-top:60px;min-height:1000px}
+.paper.idsek .judul{font-size:19px;font-weight:800;line-height:1.5}
+.paper.idsek .logo{width:170px;height:170px;object-fit:contain;margin:50px 0 60px}
+.paper.idsek table{border-collapse:separate;border-spacing:0 9px;text-align:left;font-size:12.5px;font-weight:700}
+.paper.idsek td{border:1.5px solid #000;padding:6px 10px}
+.paper.idsek td.a{width:32%}
+.paper.idsis .judul{text-align:center;font-weight:800;font-size:15px;margin:6px 0 16px}
+.paper.idsis table td{padding:4px 4px;font-size:12px;vertical-align:top}
+.paper.idsis td.no{width:24px;text-align:right}
+.paper.idsis td.l{width:42%}
+.paper.idsis td.l.sub{padding-left:18px}
+.paper.idsis td.t{width:10px}
+.paper.idsis td.v{border-bottom:1px dotted #000}
+.paper.idsis .bawah{display:flex;justify-content:space-between;align-items:flex-start;margin-top:34px;page-break-inside:avoid}
+.paper.idsis .foto{width:113px;height:151px;border:1.5px solid #000;display:grid;place-content:center;text-align:center;font-weight:700;margin-left:30px}
+.paper.idsis .foto span{font-weight:400;font-size:10px}
+.paper.idsis .kepsek{width:46%;line-height:1.5}
+.paper.idsis .kepsek .sp{height:70px}
+.paper.idsis .kepsek b{text-decoration:underline}
 #print-area{display:none}
 
 /* ---------- Responsif ---------- */
@@ -360,7 +387,7 @@ const realApi = {
 
 // ---------- Data dummy (HANYA mode preview) ----------
 const M = IS_PREVIEW ? {
-  sekolah: [{ id: 1, nama: 'SMK Mambaul Ulum', npsn: '20500000', alamat: 'Jl. Raya Mojosari Pacet', kota: 'Mojokerto', telepon: '', email: '', kepala_sekolah: 'Drs. H. Ahmad Fauzi, M.Pd.', nip_kepsek: '', logo: null }],
+  sekolah: [{ id: 1, nama: 'SMK Mambaul Ulum', yayasan: "Yayasan Mamba'ul Ulum", npsn: '69979719', alamat: 'Jl. Raya Mojosari Pacet No. 70', kelurahan: 'Awang-awang', kecamatan: 'Mojosari', kabupaten: 'Mojokerto', provinsi: 'Jawa Timur', website: 'www.smk-mambaul-ulum.sch.id', kota: 'Mojokerto', telepon: '+6285648409555', email: 'mambaulsmk@gmail.com', kepala_sekolah: "Imam Shofi'i, S.Pd., M.M.", nip_kepsek: '', logo: null }],
   tahun_ajaran: [{ id: 1, nama: '2026/2027', semester: 'Ganjil', tanggal_uts: '2026-10-06', tanggal_rapor: '2026-12-19', aktif: true }],
   jurusan: [{ id: 1, kode: 'DKV', nama: 'Desain Komunikasi Visual' }],
   guru: [
@@ -369,7 +396,7 @@ const M = IS_PREVIEW ? {
   ],
   kelas: [{ id: 1, nama: 'XI DKV', tingkat: 'XI', jurusan_id: 1, wali_guru_id: 1 }],
   siswa: [
-    { id: 1, nis: '2601', nisn: '0091234567', nama: 'Ahmad Zaki', jk: 'L', tempat_lahir: 'Jombang', tanggal_lahir: '2010-05-12', agama: 'Islam', nama_ortu: 'Sholeh', alamat: '', kelas_id: 1, aktif: true },
+    { id: 1, nis: '2601', nisn: '0091234567', nama: 'Ahmad Zaki', jk: 'L', tempat_lahir: 'Jombang', tanggal_lahir: '2010-05-12', agama: 'Islam', nama_ortu: 'Sholeh', alamat: 'Awang-Awang', kelas_id: 1, aktif: true, status_keluarga: 'Anak Kandung', anak_ke: 2, telepon: '085600000001', sekolah_asal: 'SMP Mambaul Ulum', diterima_kelas: '10 - DKV', diterima_tanggal: '2025-07-14', nama_ayah: 'Sholeh', nama_ibu: 'Siti Maryam', alamat_ortu: 'Awang-Awang', telepon_ortu: '081200000001', pekerjaan_ayah: 'Karyawan Swasta', pekerjaan_ibu: 'Wiraswasta' },
     { id: 2, nis: '2602', nisn: '0091234568', nama: 'Nur Aisyah', jk: 'P', tempat_lahir: 'Jombang', tanggal_lahir: '2010-08-03', agama: 'Islam', nama_ortu: 'Hasan', alamat: '', kelas_id: 1, aktif: true }
   ],
   mapel: [
@@ -536,7 +563,7 @@ const PRPC = {
     const c = M.catatan_rapor.find(x => x.siswa_id === s.id && x.tahun_ajaran_id === ta.id && x.jenis === p_jenis) || null;
     const j = k ? M.jurusan.find(x => x.id === k.jurusan_id) : null;
     const w = k ? M.guru.find(x => x.id === k.wali_guru_id) : null;
-    const { kelas_id, aktif, agama, ...sv } = s;
+    const { kelas_id, aktif, ...sv } = s;
     return {
       jenis: p_jenis, sekolah: M.sekolah[0], tahun_ajaran: { id: ta.id, nama: ta.nama, semester: ta.semester, tanggal_rapor: ta.tanggal_rapor, tanggal_uts: ta.tanggal_uts || null },
       siswa: sv, kelas: k ? { nama: k.nama, tingkat: k.tingkat } : null,
@@ -752,7 +779,7 @@ const JK = [['L', 'Laki-laki'], ['P', 'Perempuan']];
 const MASTER = {
   siswa: {
     judul: 'Data Siswa', order: 'nama',
-    select: 'id,nis,nisn,nama,jk,tempat_lahir,tanggal_lahir,agama,nama_ortu,alamat,kelas_id,aktif',
+    select: 'id,nis,nisn,nama,jk,tempat_lahir,tanggal_lahir,agama,nama_ortu,alamat,kelas_id,aktif,status_keluarga,anak_ke,telepon,sekolah_asal,diterima_kelas,diterima_tanggal,nama_ayah,nama_ibu,alamat_ortu,telepon_ortu,pekerjaan_ayah,pekerjaan_ibu,nama_wali,alamat_wali,telepon_wali,pekerjaan_wali',
     refs: ['kelas'], filter: 'kelas_id', impor: true,
     cols: [['nisn', 'NISN'], ['nis', 'NIS'], ['nama', 'Nama', r => `<b>${esc(r.nama)}</b>`], ['jk', 'L/P'], ['kelas_id', 'Kelas', (r, R) => esc(nm(R.kelas, r.kelas_id))], ['aktif', 'Status', r => r.aktif ? '<span class="badge b-green">Aktif</span>' : '<span class="badge b-gray">Nonaktif</span>']],
     fields: [
@@ -760,7 +787,17 @@ const MASTER = {
       { k: 'jk', l: 'Jenis Kelamin', type: 'select', opts: JK }, { k: 'kelas_id', l: 'Kelas', type: 'ref', ref: 'kelas' },
       { k: 'tempat_lahir', l: 'Tempat Lahir' }, { k: 'tanggal_lahir', l: 'Tanggal Lahir', type: 'date' },
       { k: 'agama', l: 'Agama', type: 'select', opts: ['Islam', 'Kristen', 'Katolik', 'Hindu', 'Buddha', 'Konghucu'].map(x => [x, x]) },
-      { k: 'nama_ortu', l: 'Nama Orang Tua/Wali' }, { k: 'alamat', l: 'Alamat', type: 'textarea', full: 1 },
+      { k: 'status_keluarga', l: 'Status dalam Keluarga', ph: 'Anak Kandung' }, { k: 'anak_ke', l: 'Anak ke', type: 'number' },
+      { k: 'alamat', l: 'Alamat Peserta Didik', type: 'textarea', full: 1 }, { k: 'telepon', l: 'Nomor Telepon Rumah/HP' },
+      { k: 'sekolah_asal', l: 'Sekolah Asal' },
+      { k: 'diterima_kelas', l: 'Diterima di Kelas', ph: 'contoh: 10 - DKV' }, { k: 'diterima_tanggal', l: 'Diterima pada Tanggal', type: 'date' },
+      { sec: 'Data Orang Tua' },
+      { k: 'nama_ayah', l: 'Nama Ayah' }, { k: 'nama_ibu', l: 'Nama Ibu' },
+      { k: 'pekerjaan_ayah', l: 'Pekerjaan Ayah' }, { k: 'pekerjaan_ibu', l: 'Pekerjaan Ibu' },
+      { k: 'alamat_ortu', l: 'Alamat Orang Tua', full: 1 }, { k: 'telepon_ortu', l: 'Telepon Orang Tua' },
+      { sec: 'Data Wali (bila ada)' },
+      { k: 'nama_wali', l: 'Nama Wali' }, { k: 'pekerjaan_wali', l: 'Pekerjaan Wali' },
+      { k: 'alamat_wali', l: 'Alamat Wali', full: 1 }, { k: 'telepon_wali', l: 'Telepon Wali' },
       { k: 'aktif', l: 'Siswa aktif', type: 'check', def: true }
     ]
   },
@@ -891,7 +928,7 @@ function formMaster(key, row, R, onDone) {
   };
   const m = modal({
     title: (row ? 'Ubah ' : 'Tambah ') + cfg.judul.replace(/^Data /, ''),
-    body: `<form class="form-grid" id="fm">${cfg.fields.map(f => `<div class="field ${f.full ? 'full' : ''}">${f.type === 'check' ? '' : `<label>${esc(f.l)}${f.req ? ' <span style="color:var(--danger)">*</span>' : ''}</label>`}${input(f)}${f.hint ? `<div class="hint">${esc(f.hint)}</div>` : ''}</div>`).join('')}</form>`,
+    body: `<form class="form-grid" id="fm">${cfg.fields.map(f => f.sec ? `<h4 class="full" style="grid-column:1/-1;margin:10px 0 0;padding-top:10px;border-top:1px dashed var(--border-strong)">${esc(f.sec)}</h4>` : `<div class="field ${f.full ? 'full' : ''}">${f.type === 'check' ? '' : `<label>${esc(f.l)}${f.req ? ' <span style="color:var(--danger)">*</span>' : ''}</label>`}${input(f)}${f.hint ? `<div class="hint">${esc(f.hint)}</div>` : ''}</div>`).join('')}</form>`,
     foot: `<button class="btn btn-ghost" data-x>Batal</button><button class="btn btn-primary" data-save><i data-lucide="save"></i> Simpan</button>`
   });
   const fm = $('#fm', m.el);
@@ -899,6 +936,7 @@ function formMaster(key, row, R, onDone) {
     if (!fm.reportValidity()) return;
     const d = {};
     for (const f of cfg.fields) {
+      if (f.sec) continue;
       const el = fm.elements[f.k];
       if (f.type === 'check') { d[f.k] = el.checked; continue; }
       let v = el.value.trim();
@@ -1311,6 +1349,67 @@ function latarRapor(sk) {
   return `background-image:url('data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}')`;
 }
 
+
+// ---------- Sampul, identitas sekolah, identitas peserta didik ----------
+const JENIS_CETAK = [['rapor', 'Rapor (nilai)'], ['sampul', 'Sampul'], ['sekolah', 'Identitas Sekolah'], ['identitas', 'Identitas Peserta Didik'], ['lengkap', 'Lengkap (sampul + identitas + rapor)']];
+const UP = v => String(v ?? '').toUpperCase();
+function htmlSampul(d) {
+  const sk = d.sekolah || {}, s = d.siswa || {};
+  const alamat = [sk.alamat, sk.kelurahan && 'Ds. ' + sk.kelurahan.replace(/^(ds|desa|kel)\.?\s*/i, ''), sk.kecamatan && 'Kec. ' + sk.kecamatan, (sk.kabupaten || sk.kota) && 'Kab. ' + String(sk.kabupaten || sk.kota).replace(/^(kab|kabupaten)\.?\s*/i, ''), sk.provinsi && 'Prov. ' + sk.provinsi].filter(Boolean).join(' ');
+  const kontak = [sk.email && 'email: ' + sk.email, sk.website && 'web: ' + sk.website].filter(Boolean).join(' ');
+  return `<div class="paper sampul"><div class="bingkai">
+    <img class="logo" src="${sk.logo || S.logo}" alt="">
+    <div class="judul">RAPOR PESERTA DIDIK<br>SEKOLAH MENENGAH KEJURUAN<br>${esc(UP(sk.nama || 'SMK Mambaul Ulum'))}</div>
+    <div class="kotak-lbl">NAMA PESERTA DIDIK</div><div class="kotak">${esc(UP(s.nama))}</div>
+    <div class="kotak-lbl">NISN</div><div class="kotak">${esc(s.nisn || '')}</div>
+    <div class="kaki">${sk.yayasan ? `<div class="besar">${esc(UP(sk.yayasan))}</div>` : ''}<div class="besar">${esc(UP(sk.nama || 'SMK Mambaul Ulum'))}</div>
+      <div>${esc(alamat)}${sk.telepon ? ' No. Telp ' + esc(sk.telepon) : ''}</div>${kontak ? `<div>${esc(kontak)}</div>` : ''}${sk.npsn ? `<div>NPSN : ${esc(sk.npsn)}</div>` : ''}</div>
+  </div></div>`;
+}
+function htmlIdentitasSekolah(d) {
+  const sk = d.sekolah || {};
+  const baris = [['NAMA SEKOLAH', sk.nama], ['NPSN', sk.npsn], ['ALAMAT SEKOLAH', sk.alamat], ['KELURAHAN', sk.kelurahan], ['KECAMATAN', sk.kecamatan],
+    ['KABUPATEN/KOTA', sk.kabupaten || sk.kota], ['PROVINSI', sk.provinsi], ['WEBSITE', sk.website], ['E-MAIL', sk.email]].filter(([, v], i) => i !== 6 || v);
+  return `<div class="paper idsek">
+    <div class="judul">RAPOR PESERTA DIDIK<br>SEKOLAH MENENGAH KEJURUAN (SMK)</div>
+    <img class="logo" src="${sk.logo || S.logo}" alt="">
+    <table>${baris.map(([a, b]) => `<tr><td class="a">${a}</td><td>${esc(UP(b || '-'))}</td></tr>`).join('')}</table>
+  </div>`;
+}
+function htmlIdentitasSiswa(d) {
+  const sk = d.sekolah || {}, s = d.siswa || {}, ta = d.tahun_ajaran || {};
+  const v = x => esc(x === null || x === undefined || x === '' ? '-' : x);
+  const no = (n, l) => `<td class="no">${n}</td><td class="l">${l}</td>`;
+  const r = (n, l, x) => `<tr>${no(n, l)}<td class="t">:</td><td class="v">${v(x)}</td></tr>`;
+  const sub = (l, x) => `<tr><td></td><td class="l sub">${l}</td><td class="t">:</td><td class="v">${v(x)}</td></tr>`;
+  const head = (n, l) => `<tr>${no(n, l)}<td></td><td></td></tr>`;
+  const ttl = [s.tempat_lahir, s.tanggal_lahir ? tglIndo(s.tanggal_lahir) : ''].filter(Boolean).join(', ');
+  const tgl = d.jenis === 'UTS' ? ta.tanggal_uts : ta.tanggal_rapor;
+  return `<div class="paper idsis" style="${latarRapor(sk)}"><img class="wm" src="${sk.logo || S.logo}" alt="">
+    <div class="judul">IDENTITAS DIRI PESERTA DIDIK</div>
+    <table>
+      ${r(1, 'Nama Peserta Didik (Lengkap)', UP(s.nama))}${r(2, 'Nomor Induk Siswa Nasional (NISN)', s.nisn)}${r(3, 'Tempat, Tanggal Lahir', ttl)}
+      ${r(4, 'Jenis Kelamin', s.jk)}${r(5, 'Agama', s.agama)}${r(6, 'Status dalam Keluarga', s.status_keluarga)}${r(7, 'Anak ke', s.anak_ke)}
+      ${r(8, 'Alamat Peserta Didik', s.alamat)}${r(9, 'Nomor Telepon Rumah', s.telepon)}${r(10, 'Sekolah Asal', s.sekolah_asal)}
+      ${head(11, 'Diterima di Sekolah ini')}${sub('Di Kelas', s.diterima_kelas)}${sub('Pada Tanggal', s.diterima_tanggal ? tglAngka(s.diterima_tanggal).replace(/-/g, '/') : '')}
+      ${head(12, 'Nama Orang Tua')}${sub('Ayah', s.nama_ayah || s.nama_ortu)}${sub('Ibu', s.nama_ibu)}
+      ${r(13, 'Alamat Orang Tua', s.alamat_ortu)}${sub('Nomor Telepon Rumah', s.telepon_ortu)}
+      ${head(14, 'Pekerjaan Orang Tua')}${sub('Ayah', s.pekerjaan_ayah)}${sub('Ibu', s.pekerjaan_ibu)}
+      ${r(15, 'Nama Wali Peserta Didik', s.nama_wali)}${r(16, 'Alamat Wali Peserta Didik', s.alamat_wali)}${sub('Nomor Telepon Rumah', s.telepon_wali)}
+      ${r(17, 'Pekerjaan Wali Peserta Didik', s.pekerjaan_wali)}
+    </table>
+    <div class="bawah"><div class="foto">FOTO<br><span>3 x 4</span></div>
+      <div class="kepsek">${esc(sk.kota || sk.kabupaten || '..........')}, ${tgl ? tglIndo(tgl) : '....................'}<br>Kepala Sekolah<div class="sp"></div><b>${esc(sk.kepala_sekolah || '.............................')}</b>${sk.nip_kepsek ? '<br>NIP. ' + esc(sk.nip_kepsek) : ''}</div></div>
+  </div>`;
+}
+function htmlCetak(d, apa) {
+  if (apa === 'sampul') return htmlSampul(d);
+  if (apa === 'sekolah') return htmlIdentitasSekolah(d);
+  if (apa === 'identitas') return htmlIdentitasSiswa(d);
+  if (apa === 'lengkap') return htmlSampul(d) + htmlIdentitasSekolah(d) + htmlIdentitasSiswa(d) + htmlRapor(d);
+  return htmlRapor(d);
+}
+
 function htmlRapor(d) { return d.jenis === 'UTS' ? htmlRaporUTS(d) : htmlRaporSemester(d); }
 
 function ttdRapor(d, tanggal, labelKepsek) {
@@ -1393,12 +1492,12 @@ function htmlRaporSemester(d) {
 
 function cetak(html) { $('#print-area').innerHTML = html; setTimeout(() => window.print(), 150); }
 
-async function lihatRapor(siswaId, taId, jenis) {
+async function lihatRapor(siswaId, taId, jenis, apa = 'rapor') {
   const m = modal({ title: 'Pratinjau Rapor', wide: true, body: '<div style="display:grid;place-items:center;padding:40px"><span class="spin dark"></span></div>',
     foot: `<button class="btn btn-ghost" data-x>Tutup</button><button class="btn btn-primary" data-print disabled><i data-lucide="printer"></i> Cetak / Simpan PDF</button>` });
   try {
     const d = await api.rpc('rapor_siswa', { p_token: tok(), p_siswa_id: siswaId, p_ta_id: taId || null, p_jenis: jenis });
-    const html = htmlRapor(d);
+    const html = htmlCetak(d, apa);
     $('.modal-body', m.el).innerHTML = `<div style="background:#E2E8F0;padding:14px;border-radius:12px">${html}</div>`;
     const b = $('[data-print]', m.el); b.disabled = false; b.onclick = () => cetak(html);
   } catch (e) { $('.modal-body', m.el).innerHTML = emptyState('Gagal memuat rapor', errMsg(e), 'alert-triangle'); icons(); }
@@ -1412,6 +1511,7 @@ async function pageRapor(v) {
   const pj = pilihJenis(() => muat());
   v.innerHTML = `<div class="card glass">${pj.html}<div class="form-grid">
       <div class="field"><label>Kelas</label><select class="input" id="sel-k">${kelas.map(k => `<option value="${k.id}" ${S.pilihKelas == k.id ? 'selected' : ''}>${esc(k.nama)}</option>`).join('')}</select></div>
+      <div class="field"><label>Yang Dicetak</label><select class="input" id="sel-apa">${JENIS_CETAK.map(([k, l]) => `<option value="${k}" ${S.pilihCetak === k ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
       <div class="field"><label>Tahun Ajaran / Semester</label><select class="input" id="sel-ta">${taList.map(t => `<option value="${t.id}" ${t.id === taDef ? 'selected' : ''}>${esc(t.nama)} — ${esc(t.semester)}${t.aktif ? ' (aktif)' : ''}</option>`).join('')}</select></div>
     </div></div><div id="rap-box" style="margin-top:16px"></div>`;
   const muat = async () => {
@@ -1427,11 +1527,12 @@ async function pageRapor(v) {
         <div class="table-wrap"><table class="tbl"><thead><tr><th class="num">No</th><th>NISN</th><th>Nama</th><th class="act">Aksi</th></tr></thead>
         <tbody>${siswa.map((s, i) => `<tr><td class="num">${i + 1}</td><td>${esc(s.nisn)}</td><td><b>${esc(s.nama)}</b></td><td class="act"><button class="btn btn-ghost btn-sm" data-r="${s.siswa_id}"><i data-lucide="eye"></i> Lihat & Cetak</button></td></tr>`).join('')}</tbody></table></div></div>`;
       icons();
-      $$('[data-r]', box).forEach(b => b.onclick = () => lihatRapor(Number(b.dataset.r), Number($('#sel-ta').value), S.jenis));
+      $$('[data-r]', box).forEach(b => b.onclick = () => lihatRapor(Number(b.dataset.r), Number($('#sel-ta').value), S.jenis, $('#sel-apa').value));
       $('#btn-all').onclick = e => busy(e.currentTarget, async () => {
         try {
           const taId = Number($('#sel-ta').value), parts = [];
-          for (const s of siswa) parts.push(htmlRapor(await api.rpc('rapor_siswa', { p_token: tok(), p_siswa_id: s.siswa_id, p_ta_id: taId, p_jenis: S.jenis })));
+          const apa = $('#sel-apa').value;
+          for (const s of siswa) parts.push(htmlCetak(await api.rpc('rapor_siswa', { p_token: tok(), p_siswa_id: s.siswa_id, p_ta_id: taId, p_jenis: S.jenis }), apa));
           cetak(parts.join(''));
         } catch (er) { toast(errMsg(er), 'err'); }
       });
@@ -1439,6 +1540,7 @@ async function pageRapor(v) {
   };
   pj.bind(v);
   $('#sel-k').onchange = muat;
+  $('#sel-apa').onchange = e => { S.pilihCetak = e.target.value; };
   await muat();
 }
 
@@ -1464,7 +1566,7 @@ async function pageAkun(v) {
 
 async function pagePengaturan(v) {
   const sk = (await api.list('sekolah'))[0] || { id: 1 };
-  const F = [['nama', 'Nama Sekolah', 1], ['npsn', 'NPSN'], ['alamat', 'Alamat', 1], ['kota', 'Kota/Kabupaten (untuk tanda tangan)'], ['telepon', 'Telepon'], ['email', 'Email'], ['kepala_sekolah', 'Nama Kepala Sekolah'], ['nip_kepsek', 'NIP Kepala Sekolah']];
+  const F = [['nama', 'Nama Sekolah', 1], ['yayasan', 'Nama Yayasan (untuk sampul)', 1], ['npsn', 'NPSN'], ['alamat', 'Alamat (jalan & nomor)', 1], ['kelurahan', 'Kelurahan / Desa'], ['kecamatan', 'Kecamatan'], ['kabupaten', 'Kabupaten / Kota'], ['provinsi', 'Provinsi'], ['kota', 'Tempat tanda tangan rapor (mis. Mojokerto)'], ['telepon', 'Telepon'], ['email', 'Email'], ['website', 'Website'], ['kepala_sekolah', 'Nama Kepala Sekolah'], ['nip_kepsek', 'NIP Kepala Sekolah']];
   v.innerHTML = `<div class="card glass"><div class="card-head"><h3>Logo Sekolah</h3></div>
       <div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">
         <img id="logo-prev" src="${esc(sk.logo || LOGO_DEFAULT)}" alt="Logo" style="width:96px;height:96px;object-fit:contain;border-radius:14px;background:#fff;border:1px solid var(--border);padding:6px">

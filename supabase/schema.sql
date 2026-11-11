@@ -148,6 +148,29 @@ create table if not exists public.sesi_login (
 
 -- Migrasi bila skema versi sebelumnya sudah pernah dijalankan
 alter table public.sekolah add column if not exists logo text;   -- logo sekolah (data URL gambar)
+-- Data untuk sampul, identitas sekolah & identitas peserta didik
+alter table public.sekolah add column if not exists yayasan text;
+alter table public.sekolah add column if not exists kelurahan text;
+alter table public.sekolah add column if not exists kecamatan text;
+alter table public.sekolah add column if not exists kabupaten text;
+alter table public.sekolah add column if not exists provinsi text;
+alter table public.sekolah add column if not exists website text;
+alter table public.siswa add column if not exists status_keluarga text;
+alter table public.siswa add column if not exists anak_ke int;
+alter table public.siswa add column if not exists telepon text;
+alter table public.siswa add column if not exists sekolah_asal text;
+alter table public.siswa add column if not exists diterima_kelas text;
+alter table public.siswa add column if not exists diterima_tanggal date;
+alter table public.siswa add column if not exists nama_ayah text;
+alter table public.siswa add column if not exists nama_ibu text;
+alter table public.siswa add column if not exists alamat_ortu text;
+alter table public.siswa add column if not exists telepon_ortu text;
+alter table public.siswa add column if not exists pekerjaan_ayah text;
+alter table public.siswa add column if not exists pekerjaan_ibu text;
+alter table public.siswa add column if not exists nama_wali text;
+alter table public.siswa add column if not exists alamat_wali text;
+alter table public.siswa add column if not exists telepon_wali text;
+alter table public.siswa add column if not exists pekerjaan_wali text;
 alter table public.tahun_ajaran add column if not exists tanggal_uts date;
 alter table public.mapel add column if not exists induk_id bigint references public.mapel(id) on delete set null;
 alter table public.nilai add column if not exists formatif jsonb;
@@ -447,9 +470,7 @@ begin
     'jenis', p_jenis,
     'sekolah', (select row_to_json(x) from sekolah x where id = 1),
     'tahun_ajaran', json_build_object('id', v_ta.id, 'nama', v_ta.nama, 'semester', v_ta.semester, 'tanggal_rapor', v_ta.tanggal_rapor, 'tanggal_uts', v_ta.tanggal_uts),
-    'siswa', json_build_object('id', v_siswa.id, 'nis', v_siswa.nis, 'nisn', v_siswa.nisn, 'nama', v_siswa.nama,
-                               'jk', v_siswa.jk, 'tempat_lahir', v_siswa.tempat_lahir, 'tanggal_lahir', v_siswa.tanggal_lahir,
-                               'nama_ortu', v_siswa.nama_ortu, 'alamat', v_siswa.alamat),
+    'siswa', row_to_json(v_siswa),   -- seluruh data siswa (untuk halaman identitas peserta didik)
     'kelas', case when v_kelas.id is null then null else json_build_object('nama', v_kelas.nama, 'tingkat', v_kelas.tingkat) end,
     'jurusan', (select json_build_object('kode', j.kode, 'nama', j.nama) from jurusan j where j.id = v_kelas.jurusan_id),
     'wali', (select json_build_object('nama', g.nama, 'nip', g.nip) from guru g where g.id = v_kelas.wali_guru_id),
