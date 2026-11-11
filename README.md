@@ -8,7 +8,7 @@ Aplikasi rapor digital (Kurikulum Merdeka) untuk SMK Mambaul Ulum. Frontend stat
 |---|---|---|
 | **Admin** | Email & password (Supabase Auth) | Beranda & progres nilai UTS / akhir semester, Siswa (+ impor dari Excel), Guru, Kelas, Mata Pelajaran, Konsentrasi Keahlian, Pembagian Mengajar, Input Nilai, Kehadiran & Catatan, Cetak Rapor (per siswa / satu kelas), Pengaturan (identitas sekolah, tahun ajaran) |
 | **Guru mapel** | Username + password (tabel `guru`) | Beranda, Input Nilai & CP hanya untuk mapel yang diampu, Ganti Password |
-| **Wali kelas** (guru yang ditunjuk di menu Kelas) | sama dengan guru | Semua menu guru + Input Nilai & CP **semua mapel di kelas perwaliannya**, Kehadiran & Catatan, Cetak Rapor kelasnya |
+| **Wali kelas** (guru yang ditunjuk di menu Kelas) | sama dengan guru | Semua menu guru + Input Nilai & CP **semua mapel di kelas perwaliannya**, Kehadiran & Catatan, Cetak Rapor kelasnya, **Data Siswa** (ubah identitas siswa kelasnya; pindah kelas & status aktif tetap oleh admin) |
 
 Siswa tidak memiliki akun; rapor dicetak/di-PDF-kan oleh admin atau wali kelas.
 

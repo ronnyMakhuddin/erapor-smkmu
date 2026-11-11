@@ -545,6 +545,16 @@ const PRPC = {
     }
     return n;
   },
+  siswa_kelas({ p_token, p_kelas_id }) {
+    const a = pAkses(p_token); pCekWali(a, p_kelas_id);
+    return M.siswa.filter(s => s.kelas_id == p_kelas_id && s.aktif).sort((x, y) => cmp(x.nama, y.nama)).map(s => ({ ...s }));
+  },
+  simpan_siswa({ p_token, p_siswa_id, p_data }) {
+    const a = pAkses(p_token); const s = M.siswa.find(x => x.id == p_siswa_id); if (!s) throw new Error('Siswa tidak ditemukan');
+    pCekWali(a, s.kelas_id);
+    if (!String(p_data.nisn || '').trim() || !String(p_data.nama || '').trim()) throw new Error('NISN dan nama wajib diisi');
+    const { id, kelas_id, aktif, ...isi } = p_data; Object.assign(s, isi); return null;
+  },
   rapor_siswa({ p_token, p_siswa_id, p_ta_id, p_jenis }) {
     const a = pAkses(p_token); pCekJenis(p_jenis);
     const s = M.siswa.find(x => x.id == p_siswa_id); if (!s) throw new Error('Siswa tidak ditemukan');
@@ -631,6 +641,7 @@ const MENU = {
     { id: 'nilai', label: 'Input Nilai', icon: 'pencil-line', mob: 1 },
     { id: 'catatan', label: 'Kehadiran & Catatan', icon: 'clipboard-list', mob: 1, wali: 1 },
     { id: 'rapor', label: 'Cetak Rapor', icon: 'printer', mob: 1, wali: 1 },
+    { id: 'siswa', label: 'Data Siswa', icon: 'users', wali: 1 },
     { id: 'akun', label: 'Akun Saya', icon: 'user-cog', mob: 1 }
   ]
 };
@@ -915,8 +926,8 @@ async function pageMaster(key, host) {
   tampil();
 }
 
-function formMaster(key, row, R, onDone) {
-  const cfg = MASTER[key];
+function formMaster(key, row, R, onDone, opsi = {}) {
+  const cfg = MASTER[key], FIELDS = opsi.fields || cfg.fields;
   const val = f => row ? (f.type === 'password' ? '' : row[f.k]) : f.def;
   const input = f => {
     const v = val(f), req = f.req ? 'required' : '';
@@ -928,14 +939,14 @@ function formMaster(key, row, R, onDone) {
   };
   const m = modal({
     title: (row ? 'Ubah ' : 'Tambah ') + cfg.judul.replace(/^Data /, ''),
-    body: `<form class="form-grid" id="fm">${cfg.fields.map(f => f.sec ? `<h4 class="full" style="grid-column:1/-1;margin:10px 0 0;padding-top:10px;border-top:1px dashed var(--border-strong)">${esc(f.sec)}</h4>` : `<div class="field ${f.full ? 'full' : ''}">${f.type === 'check' ? '' : `<label>${esc(f.l)}${f.req ? ' <span style="color:var(--danger)">*</span>' : ''}</label>`}${input(f)}${f.hint ? `<div class="hint">${esc(f.hint)}</div>` : ''}</div>`).join('')}</form>`,
+    body: `<form class="form-grid" id="fm">${FIELDS.map(f => f.sec ? `<h4 class="full" style="grid-column:1/-1;margin:10px 0 0;padding-top:10px;border-top:1px dashed var(--border-strong)">${esc(f.sec)}</h4>` : `<div class="field ${f.full ? 'full' : ''}">${f.type === 'check' ? '' : `<label>${esc(f.l)}${f.req ? ' <span style="color:var(--danger)">*</span>' : ''}</label>`}${input(f)}${f.hint ? `<div class="hint">${esc(f.hint)}</div>` : ''}</div>`).join('')}</form>`,
     foot: `<button class="btn btn-ghost" data-x>Batal</button><button class="btn btn-primary" data-save><i data-lucide="save"></i> Simpan</button>`
   });
   const fm = $('#fm', m.el);
   const simpan = async () => {
     if (!fm.reportValidity()) return;
     const d = {};
-    for (const f of cfg.fields) {
+    for (const f of FIELDS) {
       if (f.sec) continue;
       const el = fm.elements[f.k];
       if (f.type === 'check') { d[f.k] = el.checked; continue; }
@@ -946,7 +957,7 @@ function formMaster(key, row, R, onDone) {
     }
     await busy($('[data-save]', m.el), async () => {
       try {
-        if (row) await api.update(key, row.id, d); else await api.insert(key, d);
+        if (opsi.save) await opsi.save(d); else if (row) await api.update(key, row.id, d); else await api.insert(key, d);
         toast(row ? 'Perubahan disimpan' : 'Data ditambahkan'); m.close(); await onDone();
       } catch (e) { toast(errMsg(e), 'err'); }
     });
@@ -1544,6 +1555,35 @@ async function pageRapor(v) {
   await muat();
 }
 
+// Wali kelas: kelola data identitas siswa di kelasnya
+async function pageSiswaWali(v) {
+  const kelas = await kelasPilihan();
+  if (!kelas.length) { v.innerHTML = `<div class="card glass">${emptyState('Anda bukan wali kelas', '', 'users')}</div>`; icons(); return; }
+  v.innerHTML = `<div class="card glass"><div class="form-grid"><div class="field"><label>Kelas</label><select class="input" id="sel-k">${kelas.map(k => `<option value="${k.id}" ${S.pilihKelas == k.id ? 'selected' : ''}>${esc(k.nama)}</option>`).join('')}</select></div></div>
+    <p class="small muted" style="margin:10px 0 0">Lengkapi identitas siswa untuk halaman <b>Identitas Peserta Didik</b> di rapor. Pindah kelas & status aktif diatur oleh admin.</p></div><div id="sw-box" style="margin-top:16px"></div>`;
+  const lengkap = s => ['tempat_lahir', 'tanggal_lahir', 'agama', 'alamat', 'sekolah_asal', 'diterima_kelas', 'diterima_tanggal', 'nama_ayah', 'nama_ibu', 'pekerjaan_ayah', 'pekerjaan_ibu'].filter(k => s[k] !== null && s[k] !== undefined && s[k] !== '').length;
+  const muat = async () => {
+    const kid = Number($('#sel-k').value); S.pilihKelas = kid;
+    const box = $('#sw-box'); box.innerHTML = loading();
+    try {
+      const rows = await api.rpc('siswa_kelas', { p_token: tok(), p_kelas_id: kid });
+      box.innerHTML = `<div class="card glass"><div class="card-head"><h3>Data Siswa</h3><span class="badge b-gray">${rows.length} siswa</span></div>${rows.length ? `<div class="table-wrap"><table class="tbl"><thead><tr><th class="num">No</th><th>NISN</th><th>Nama</th><th>L/P</th><th>Kelengkapan</th><th class="act">Aksi</th></tr></thead>
+        <tbody>${rows.map((s, i) => { const n = lengkap(s); return `<tr><td class="num">${i + 1}</td><td>${esc(s.nisn)}</td><td><b>${esc(s.nama)}</b></td><td>${esc(s.jk || '-')}</td><td><span class="badge ${n === 11 ? 'b-green' : n >= 6 ? 'b-amber' : 'b-gray'}">${n}/11</span></td>
+          <td class="act"><button class="btn btn-ghost btn-sm" data-ed="${s.id}"><i data-lucide="pencil"></i> Ubah</button></td></tr>`; }).join('')}</tbody></table></div>` : emptyState('Belum ada siswa di kelas ini', '', 'users')}</div>`;
+      icons();
+      $$('[data-ed]', box).forEach(b => b.onclick = () => {
+        const row = rows.find(r => r.id == b.dataset.ed);
+        formMaster('siswa', row, {}, muat, {
+          fields: MASTER.siswa.fields.filter(f => !['kelas_id', 'aktif'].includes(f.k)),
+          save: d => api.rpc('simpan_siswa', { p_token: tok(), p_siswa_id: row.id, p_data: d })
+        });
+      });
+    } catch (e) { box.innerHTML = `<div class="card glass">${emptyState('Gagal memuat', errMsg(e), 'alert-triangle')}</div>`; icons(); }
+  };
+  $('#sel-k').onchange = muat;
+  await muat();
+}
+
 async function pageAkun(v) {
   const info = S.user.peran === 'guru' ? `Username: <b>${esc(S.guru.guru.username)}</b>` : `Email: <b>${esc(S.user.email)}</b>`;
   v.innerHTML = `<div class="card glass" style="max-width:520px"><div class="card-head"><div class="avatar" style="width:48px;height:48px;font-size:16px">${esc(inisial(S.user.nama))}</div><div><h3>${esc(S.user.nama)}</h3><div class="small muted">${info}</div></div></div>
@@ -1598,7 +1638,7 @@ async function pagePengaturan(v) {
 
 const PAGES = {
   beranda: v => S.user.peran === 'admin' ? pageBerandaAdmin(v) : pageBerandaGuru(v),
-  siswa: v => pageMaster('siswa', v), guru: v => pageMaster('guru', v), kelas: v => pageMaster('kelas', v),
+  siswa: v => S.user.peran === 'admin' ? pageMaster('siswa', v) : pageSiswaWali(v), guru: v => pageMaster('guru', v), kelas: v => pageMaster('kelas', v),
   mapel: v => pageMaster('mapel', v), jurusan: v => pageMaster('jurusan', v), mengajar: v => pageMaster('mengajar', v),
   nilai: pageNilai, catatan: pageCatatan, rapor: pageRapor, akun: pageAkun, pengaturan: pagePengaturan
 };

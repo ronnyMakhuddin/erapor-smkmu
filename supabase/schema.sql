@@ -495,6 +495,33 @@ begin
   );
 end $$;
 
+
+-- Wali kelas: lihat & ubah data identitas siswa di kelasnya (kelas & status aktif tetap diatur admin)
+create or replace function public.siswa_kelas(p_token uuid, p_kelas_id bigint)
+returns json language plpgsql security definer set search_path = public as $$
+declare a record;
+begin
+  select * into a from _akses(p_token);
+  perform _cek_wali(a.peran, a.ref_id, p_kelas_id);
+  return coalesce((select json_agg(row_to_json(s) order by s.nama) from siswa s where s.kelas_id = p_kelas_id and s.aktif), '[]'::json);
+end $$;
+
+create or replace function public.simpan_siswa(p_token uuid, p_siswa_id bigint, p_data jsonb)
+returns void language plpgsql security definer set search_path = public as $$
+declare a record; v_kelas bigint;
+begin
+  select * into a from _akses(p_token);
+  select kelas_id into v_kelas from siswa where id = p_siswa_id;
+  if not found then raise exception 'Siswa tidak ditemukan'; end if;
+  perform _cek_wali(a.peran, a.ref_id, v_kelas);
+  if coalesce(trim(p_data->>'nisn'), '') = '' or coalesce(trim(p_data->>'nama'), '') = '' then
+    raise exception 'NISN dan nama wajib diisi';
+  end if;
+  update siswa s set (nis, nisn, nama, jk, tempat_lahir, tanggal_lahir, agama, alamat, status_keluarga, anak_ke, telepon, sekolah_asal, diterima_kelas, diterima_tanggal, nama_ayah, nama_ibu, alamat_ortu, telepon_ortu, pekerjaan_ayah, pekerjaan_ibu, nama_wali, alamat_wali, telepon_wali, pekerjaan_wali)
+    = (select r.nis, r.nisn, r.nama, r.jk, r.tempat_lahir, r.tanggal_lahir, r.agama, r.alamat, r.status_keluarga, r.anak_ke, r.telepon, r.sekolah_asal, r.diterima_kelas, r.diterima_tanggal, r.nama_ayah, r.nama_ibu, r.alamat_ortu, r.telepon_ortu, r.pekerjaan_ayah, r.pekerjaan_ibu, r.nama_wali, r.alamat_wali, r.telepon_wali, r.pekerjaan_wali from jsonb_populate_record(null::siswa, p_data) r)
+  where s.id = p_siswa_id;
+end $$;
+
 -- ---------------------------------------------------------------------
 -- 5. ROW LEVEL SECURITY
 -- ---------------------------------------------------------------------
@@ -538,3 +565,5 @@ grant execute on function public.simpan_nilai(uuid, bigint, bigint, jsonb, jsonb
 grant execute on function public.catatan_kelas(uuid, bigint, text) to anon, authenticated;
 grant execute on function public.simpan_catatan(uuid, bigint, text, jsonb) to anon, authenticated;
 grant execute on function public.rapor_siswa(uuid, bigint, bigint, text) to anon, authenticated;
+grant execute on function public.siswa_kelas(uuid, bigint) to anon, authenticated;
+grant execute on function public.simpan_siswa(uuid, bigint, jsonb) to anon, authenticated;
